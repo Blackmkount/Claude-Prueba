@@ -1,0 +1,594 @@
+<title>Identidad BlackForge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/* Concepto: "forja moderna". Superficies de hollín y carbón con un sesgo cálido,
+   un único acento: el naranja del acero a ~900 °C. Fichas de muestra a la izquierda,
+   pantallas reales de la app (marcos de celular) a la derecha en escritorio. */
+:root {
+  /* Tema oscuro (por defecto) */
+  --bg: #110f0e;          /* Hollín */
+  --surface: #1a1716;     /* Carbón */
+  --surface-2: #24201e;   /* Yunque */
+  --line: #36312e;
+  --muted: #a39b94;       /* Ceniza */
+  --fg: #f3eee9;          /* Cal */
+  --accent: #ff5a1f;      /* Brasa ~900 °C */
+  --on-accent: #1c0d06;
+  --accent-ink: #ff7a45;
+  --ok: #45c486;
+  --run: #5aa2ff;
+  --pause: #b097ff;
+  --pickup: #f2c94c;
+  --err: #ff6363;
+  --off: #8f8780;
+  --shadow: 0 1px 0 rgb(255 255 255 / .04) inset, 0 12px 32px -18px rgb(0 0 0 / .8);
+  --font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --font-body: "Barlow", "Segoe UI", Roboto, system-ui, sans-serif;
+  --radius: 14px;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f1ed; --surface: #ffffff; --surface-2: #ece7e1; --line: #dad3cb;
+    --muted: #6b635c; --fg: #1a1614;
+    --accent: #ff5a1f; --on-accent: #1c0d06; --accent-ink: #c2410c;
+    --ok: #1d8752; --run: #1f6fd1; --pause: #7350d6; --pickup: #8a6100; --err: #c62828; --off: #6e6862;
+    --shadow: 0 1px 2px rgb(40 25 15 / .06), 0 12px 28px -20px rgb(40 25 15 / .35);
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f1ed; --surface: #ffffff; --surface-2: #ece7e1; --line: #dad3cb;
+  --muted: #6b635c; --fg: #1a1614;
+  --accent: #ff5a1f; --on-accent: #1c0d06; --accent-ink: #c2410c;
+  --ok: #1d8752; --run: #1f6fd1; --pause: #7350d6; --pickup: #8a6100; --err: #c62828; --off: #6e6862;
+  --shadow: 0 1px 2px rgb(40 25 15 / .06), 0 12px 28px -20px rgb(40 25 15 / .35);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.5;
+  padding-inline: 16px;
+  padding-block: 0 48px;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1180px; margin-inline: auto; display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.05; text-wrap: balance; margin: 0; }
+h2 { font-size: 30px; font-weight: 700; letter-spacing: .01em; }
+h3 { font-size: 21px; font-weight: 600; }
+p { margin: 0; }
+.eyebrow { font-family: var(--font-display); font-weight: 600; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.lede { color: var(--muted); max-width: 62ch; }
+.num { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+/* Encabezado */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding-block: 14px; background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+  margin-inline: -16px; padding-inline: 16px;
+}
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand svg { flex: none; }
+.wordmark { font-family: var(--font-display); font-weight: 800; font-size: 24px; letter-spacing: .06em; text-transform: uppercase; line-height: 1; }
+.wordmark span { color: var(--accent-ink); }
+.theme { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--surface); }
+.theme button {
+  font: 600 15px/1 var(--font-body); color: var(--muted); background: none; border: 0;
+  min-height: 40px; padding-inline: 14px; border-radius: 999px; cursor: pointer;
+}
+.theme button[aria-pressed="true"] { background: var(--surface-2); color: var(--fg); }
+
+.hero { display: grid; gap: 14px; padding-top: 28px; }
+.hero h1 { font-size: clamp(40px, 7vw, 68px); font-weight: 800; text-transform: uppercase; letter-spacing: .01em; }
+.hero h1 em { font-style: normal; color: var(--accent-ink); }
+
+/* Escala de calor del acero */
+.heat { display: grid; gap: 8px; max-width: 640px; }
+.heat-bar {
+  height: 14px; border-radius: 999px;
+  background: linear-gradient(90deg, #3a0c06 0%, #8e1a0c 18%, #c9260f 34%, #ff5a1f 55%, #ffa23a 74%, #ffe08a 90%, #fff6dc 100%);
+  position: relative;
+}
+.heat-bar::after {
+  content: ""; position: absolute; left: 55%; top: -5px; width: 3px; height: 24px; border-radius: 2px;
+  background: var(--fg); transform: translateX(-50%);
+}
+.heat-scale { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); gap: 8px; }
+.heat-scale b { color: var(--fg); font-weight: 600; }
+
+/* Diseño en dos columnas: fichas | pantallas */
+.grid-main { display: grid; gap: 40px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1040px) { .grid-main { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; } .sheets { position: sticky; top: 88px; } }
+.sheets { display: grid; gap: 32px; }
+section { display: grid; gap: 14px; }
+
+/* Paleta */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.sw { display: grid; grid-template-rows: 64px auto; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.sw i { display: block; }
+.sw div { padding: 8px 10px 10px; display: grid; gap: 1px; }
+.sw b { font-weight: 600; font-size: 15px; }
+.sw small { color: var(--muted); font-size: 13px; }
+.states { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Chips de estado: color + icono + texto, siempre los tres */
+.pill {
+  --c: var(--off);
+  display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 12px 4px 8px;
+  border-radius: 999px; font: 600 15px/1 var(--font-body);
+  color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+}
+.pill svg { width: 18px; height: 18px; flex: none; }
+.s-ok { --c: var(--ok); } .s-run { --c: var(--run); } .s-pause { --c: var(--pause); }
+.s-pickup { --c: var(--pickup); } .s-err { --c: var(--err); } .s-off { --c: var(--off); }
+
+/* Tipografía */
+.type { display: grid; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.type .t1 { font-family: var(--font-display); font-weight: 700; font-size: 40px; line-height: 1; }
+.type .t2 { font-family: var(--font-display); font-weight: 600; font-size: 24px; }
+.type .t3 { font-size: 17px; }
+.type .t4 { font-family: var(--font-display); font-weight: 700; font-size: 34px; font-variant-numeric: tabular-nums; }
+.type small { color: var(--muted); font-size: 13px; display: block; }
+
+/* Marcos de celular */
+.screens { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.phone {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 34px; padding: 10px;
+  box-shadow: var(--shadow); max-width: 390px; width: 100%; justify-self: center;
+}
+.screen {
+  background: var(--bg); border-radius: 26px; overflow: hidden; min-height: 640px;
+  display: grid; grid-template-rows: auto 1fr auto; position: relative;
+}
+.bar { padding: 16px 16px 10px; display: grid; gap: 10px; }
+.bar h3 { font-size: 28px; font-weight: 700; }
+.search {
+  display: flex; align-items: center; gap: 8px; min-height: 48px; padding-inline: 14px;
+  border-radius: 12px; background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+}
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.chip {
+  flex: none; min-height: 40px; padding-inline: 14px; border-radius: 999px; display: inline-flex; align-items: center;
+  border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-size: 15px; color: var(--fg);
+}
+.chip.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.body { padding: 4px 16px 16px; overflow: hidden; }
+
+/* Galería */
+.gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tile { display: grid; gap: 6px; min-width: 0; }
+.ph { aspect-ratio: 1; border-radius: 12px; overflow: hidden; position: relative; background: var(--tone, var(--surface-2)); }
+.ph svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.tile b { font-weight: 600; font-size: 16px; line-height: 1.2; }
+.tile small { color: var(--muted); font-size: 14px; }
+.ph.loading { background: linear-gradient(110deg, var(--surface-2) 30%, color-mix(in srgb, var(--surface-2) 70%, var(--fg)) 50%, var(--surface-2) 70%); background-size: 220% 100%; animation: shimmer 1.6s linear infinite; }
+.sk { height: 12px; border-radius: 6px; background: var(--surface-2); }
+@keyframes shimmer { to { background-position: -220% 0; } }
+
+/* Barra inferior */
+.tabbar {
+  display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 92%, transparent); padding: 6px 6px 10px;
+}
+.tab { display: grid; justify-items: center; gap: 2px; min-height: 56px; align-content: center; color: var(--muted); font-size: 13px; font-weight: 600; }
+.tab svg { width: 26px; height: 26px; }
+.tab.on { color: var(--fg); }
+.tab.on svg { color: var(--accent-ink); }
+
+/* Tarjetas de impresora */
+.printers { display: grid; gap: 10px; }
+.pc {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 12px; align-items: center;
+  padding: 12px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line);
+  min-height: 76px;
+}
+.pc.pick { border-color: color-mix(in srgb, var(--ok) 55%, var(--line)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--ok) 40%, transparent) inset; }
+.pc.no { background: color-mix(in srgb, var(--surface) 55%, var(--bg)); }
+.pc .ic { --c: var(--off); width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent); }
+.pc .ic svg { width: 24px; height: 24px; }
+.pc .nm { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pc .st { font-weight: 600; font-size: 15px; color: var(--c, var(--muted)); }
+.pc .why { grid-column: 2 / -1; color: var(--muted); font-size: 14px; }
+.tag { font: 700 12px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--on-accent); background: var(--accent); padding: 4px 7px; border-radius: 6px; }
+.fil { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--fg) 30%, transparent); flex: none; }
+.prog { grid-column: 2 / -1; display: grid; gap: 4px; }
+.track { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.track i { display: block; height: 100%; width: var(--p); background: var(--run); border-radius: inherit; }
+.prog span { font-size: 14px; color: var(--muted); }
+.filter { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 15px; }
+.switch { width: 46px; height: 28px; border-radius: 999px; background: var(--ok); position: relative; flex: none; }
+.switch::after { content: ""; position: absolute; right: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; }
+
+/* Confirmación */
+.summary { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.summary .ph { border-radius: 10px; }
+.summary .what { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1.05; }
+.summary .meta { display: grid; gap: 2px; margin-top: 4px; font-size: 15px; color: var(--muted); }
+.summary .meta b { color: var(--fg); font-weight: 600; }
+.checks { display: grid; gap: 10px; margin-top: 14px; }
+.check {
+  display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: center; min-height: 60px;
+  padding: 10px 14px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); cursor: pointer;
+  font-weight: 600; font-size: 16px;
+}
+.check input { appearance: none; -webkit-appearance: none; width: 28px; height: 28px; margin: 0; border-radius: 8px; border: 2px solid var(--muted); display: grid; place-items: center; cursor: pointer; }
+.check input:checked { background: var(--ok); border-color: var(--ok); }
+.check input:checked::after { content: ""; width: 8px; height: 14px; border: solid #fff; border-width: 0 3px 3px 0; transform: translateY(-2px) rotate(45deg); }
+.check:has(input:checked) { border-color: color-mix(in srgb, var(--ok) 50%, var(--line)); }
+
+.hold {
+  --p: 0;
+  position: relative; overflow: hidden; width: 100%; min-height: 64px; margin-top: 16px; border: 0; border-radius: 16px;
+  font: 700 22px/1 var(--font-display); letter-spacing: .06em; text-transform: uppercase;
+  color: var(--on-accent); background: var(--accent); cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none;
+  display: grid; place-items: center;
+}
+.hold::before {
+  content: ""; position: absolute; inset: 0; transform-origin: left; transform: scaleX(var(--p));
+  background: linear-gradient(90deg, #ffb15a, #ffe08a);
+}
+.hold span { position: relative; display: inline-flex; gap: 10px; align-items: center; }
+.hold:disabled { background: var(--surface-2); color: var(--muted); cursor: not-allowed; }
+.hold.done { background: var(--ok); color: #fff; }
+.hint { text-align: center; font-size: 14px; color: var(--muted); margin-top: 8px; min-height: 21px; }
+
+/* Icono de la app */
+.icons { display: flex; gap: 20px; align-items: end; flex-wrap: wrap; }
+.icons figure { margin: 0; display: grid; gap: 6px; justify-items: center; font-size: 13px; color: var(--muted); }
+
+.ask { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 10px; }
+.ask ol { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ph.loading { animation: none; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-nozzle" viewBox="0 0 24 24"><path d="M6 3h12v5H6zM8 8h8l-2 6h-4zM11 14h2l-1 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="M4 8 12 4l8 4v8l-8 4-8-4z M4 8l8 4 8-4 M12 12v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></symbol>
+    <symbol id="i-off" viewBox="0 0 24 24"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0zM12 16v5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 3l18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13" y="3" width="8" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="13" width="8" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-printer" viewBox="0 0 24 24"><path d="M4 3h16v18H4zM4 7h16M8 7v5h8V7M7 17h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="mark" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="15" fill="#161312"/>
+      <path d="M19 12h26v10H19z" fill="#d9d2cb"/>
+      <path d="M22 22h20l-5.5 14h-9z" fill="#b8b0a8"/>
+      <path d="M28.5 36h7l-3.5 7z" fill="#ff5a1f"/>
+      <circle cx="32" cy="44" r="3.2" fill="#ffb15a"/>
+      <rect x="14" y="50" width="36" height="3.4" rx="1.7" fill="#ff5a1f"/>
+      <rect x="18" y="55" width="28" height="2.6" rx="1.3" fill="#ff5a1f" opacity=".55"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg width="40" height="40" role="img" aria-label="Símbolo de BlackForge"><use href="#mark"/></svg>
+      <div class="wordmark">Black<span>Forge</span> Print</div>
+    </div>
+    <div class="theme" role="group" aria-label="Tema de la muestra">
+      <button type="button" id="th-system" data-t="system" aria-pressed="true">Sistema</button>
+      <button type="button" id="th-dark" data-t="dark" aria-pressed="false">Oscuro</button>
+      <button type="button" id="th-light" data-t="light" aria-pressed="false">Claro</button>
+    </div>
+  </header>
+
+  <div class="hero">
+    <p class="eyebrow">Propuesta de identidad · Fase 0 · para tu visto bueno</p>
+    <h1>Superficies de carbón, <em>acento de brasa</em></h1>
+    <p class="lede">Una forja moderna: fondos sobrios con un toque cálido, y un único color de acción, el naranja del acero cuando está listo para golpearse. Ese naranja se usa solo para lo que se toca y se envía; los estados de las impresoras tienen sus propios colores, siempre con icono y texto.</p>
+    <div class="heat" aria-label="Escala de color del acero según su temperatura">
+      <div class="heat-bar"></div>
+      <div class="heat-scale num"><span>Rojo oscuro 650 °C</span><span>Cereza 750 °C</span><span><b>Brasa 900 °C</b></span><span>Amarillo 1100 °C</span><span>Blanco 1300 °C</span></div>
+    </div>
+  </div>
+
+  <div class="grid-main">
+    <div class="sheets">
+      <section aria-labelledby="h-color">
+        <h2 id="h-color">Color</h2>
+        <div class="swatches">
+          <div class="sw"><i style="background:var(--bg)"></i><div><b>Hollín</b><small>Fondo</small></div></div>
+          <div class="sw"><i style="background:var(--surface)"></i><div><b>Carbón</b><small>Tarjetas</small></div></div>
+          <div class="sw"><i style="background:var(--surface-2)"></i><div><b>Yunque</b><small>Controles, pistas</small></div></div>
+          <div class="sw"><i style="background:var(--muted)"></i><div><b>Ceniza</b><small>Texto secundario</small></div></div>
+          <div class="sw"><i style="background:var(--fg)"></i><div><b>Cal</b><small>Texto principal</small></div></div>
+          <div class="sw"><i style="background:var(--accent)"></i><div><b>Brasa</b><small>Única acción principal</small></div></div>
+        </div>
+        <p class="lede" style="font-size:14px">Los nombres son los del tema oscuro; en el tema claro los fondos se aclaran y el texto se oscurece, y la brasa se mantiene.</p>
+        <p class="eyebrow" style="margin-top:6px">Estados de impresora</p>
+        <div class="states">
+          <span class="pill s-ok"><svg><use href="#i-check"/></svg>Libre</span>
+          <span class="pill s-run"><svg><use href="#i-nozzle"/></svg>Imprimiendo</span>
+          <span class="pill s-pause"><svg><use href="#i-pause"/></svg>En pausa</span>
+          <span class="pill s-pickup"><svg><use href="#i-box"/></svg>Esperando retiro</span>
+          <span class="pill s-err"><svg><use href="#i-alert"/></svg>Con error</span>
+          <span class="pill s-off"><svg><use href="#i-off"/></svg>Sin conexión</span>
+        </div>
+      </section>
+
+      <section aria-labelledby="h-type">
+        <h2 id="h-type">Tipografía</h2>
+        <div class="type">
+          <div><small>Títulos · Barlow Condensed</small><div class="t1">Elige una impresora</div></div>
+          <div><small>Subtítulos</small><div class="t2">Oso articulado · 2 unidades</div></div>
+          <div><small>Texto · Barlow, 17 px mínimo</small><p class="t3">Revisa que la cama esté limpia y vacía antes de enviar. Si algo falla, te decimos qué hacer.</p></div>
+          <div><small>Cifras tabulares</small><div class="t4">2 h 14 min · 38 g · 62 %</div></div>
+        </div>
+        <p class="lede" style="font-size:15px">Barlow nació de la señalización de carreteras y placas de vehículos: se lee bien grande, de lejos y con prisa. En la app irá incluida en el servidor, sin depender de internet.</p>
+      </section>
+
+      <section aria-labelledby="h-icon">
+        <h2 id="h-icon">Icono en la pantalla de inicio</h2>
+        <div class="icons">
+          <figure><svg width="120" height="120" role="img" aria-label="Icono grande"><use href="#mark"/></svg>Inicio del iPhone</figure>
+          <figure><svg width="60" height="60" role="img" aria-label="Icono mediano"><use href="#mark"/></svg>Android</figure>
+          <figure><svg width="32" height="32" role="img" aria-label="Icono pequeño"><use href="#mark"/></svg>Pestaña</figure>
+        </div>
+        <p class="lede" style="font-size:15px">Una boquilla de impresora con la punta al rojo y dos capas recién depositadas: la forja y la impresión 3D en un solo signo.</p>
+      </section>
+    </div>
+
+    <section aria-labelledby="h-screens">
+      <h2 id="h-screens">Así se vería en el celular</h2>
+      <p class="lede" style="font-size:15px">Tres pantallas del recorrido de la operaria, con contenido de ejemplo. La de confirmar funciona: marca las dos casillas y mantén presionado el botón.</p>
+      <div class="screens">
+
+        <!-- Galería -->
+        <div class="phone" aria-label="Pantalla de galería">
+          <div class="screen">
+            <div class="bar">
+              <h3>Imprimir</h3>
+              <div class="search"><svg width="20" height="20"><use href="#i-search"/></svg>Buscar producto</div>
+              <div class="chips"><span class="chip on">Todo</span><span class="chip">Figuras</span><span class="chip">Hogar</span><span class="chip">Llaveros</span><span class="chip">Pedidos</span></div>
+            </div>
+            <div class="body">
+              <div class="gallery">
+                <div class="tile">
+                  <div class="ph" style="--tone:#2b2420">
+                    <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="32" cy="34" r="11" fill="#c98f5c"/><circle cx="68" cy="34" r="11" fill="#c98f5c"/><circle cx="50" cy="56" r="26" fill="#d9a06a"/><circle cx="41" cy="52" r="3" fill="#2a1a10"/><circle cx="59" cy="52" r="3" fill="#2a1a10"/><ellipse cx="50" cy="64" rx="9" ry="7" fill="#f0c9a0"/><circle cx="50" cy="62" r="3" fill="#2a1a10"/></svg>
+                  </div>
+                  <b>Oso articulado</b><small class="num">1 · 2 · 4 u.</small>
+                </div>
+                <div class="tile">
+                  <div class="ph" style="--tone:#1f2a26">
+                    <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M28 36h44l-7 42H35z" fill="#5fb38c"/><path d="M28 36h44l-3 10H31z" fill="#7fd0aa"/><path d="M42 36 38 78M58 36l4 42M50 36v42" stroke="#3f8a69" stroke-width="2"/><path d="M50 36c-6-12 2-18 8-20-1 8-3 14-8 20z" fill="#4c9a5c"/></svg>
+                  </div>
+                  <b>Maceta geométrica</b><small class="num">1 · 3 u.</small>
+                </div>
+                <div class="tile">
+                  <div class="ph" style="--tone:#2a1d17">
+                    <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="26" r="9" fill="none" stroke="#b8b0a8" stroke-width="4"/><path d="M50 35 72 48v26L50 87 28 74V48z" fill="#ff5a1f"/><path d="M50 35 72 48 50 61 28 48z" fill="#ff8a4f"/><text x="50" y="76" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="16" text-anchor="middle" fill="#1c0d06">BF</text></svg>
+                  </div>
+                  <b>Llavero BlackForge</b><small class="num">6 · 12 · 24 u.</small>
+                </div>
+                <div class="tile">
+                  <div class="ph" style="--tone:#1e2230">
+                    <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M22 76h56v6H22z" fill="#7d8bb0"/><path d="M30 76 52 26h10L44 76z" fill="#9aa8cf"/><rect x="55" y="22" width="16" height="30" rx="3" transform="rotate(22 63 37)" fill="#2c3247" stroke="#c3cdea" stroke-width="2"/></svg>
+                  </div>
+                  <b>Soporte de celular</b><small class="num">1 · 2 u.</small>
+                </div>
+                <div class="tile" aria-label="Producto cargando">
+                  <div class="ph loading"></div>
+                  <div class="sk" style="width:80%"></div><div class="sk" style="width:45%"></div>
+                </div>
+                <div class="tile" aria-label="Producto cargando">
+                  <div class="ph loading"></div>
+                  <div class="sk" style="width:70%"></div><div class="sk" style="width:40%"></div>
+                </div>
+              </div>
+            </div>
+            <nav class="tabbar" aria-label="Navegación de ejemplo">
+              <span class="tab on"><svg><use href="#i-grid"/></svg>Imprimir</span>
+              <span class="tab"><svg><use href="#i-printer"/></svg>Impresoras</span>
+              <span class="tab"><svg><use href="#i-user"/></svg>Yo</span>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Elegir impresora -->
+        <div class="phone" aria-label="Pantalla para elegir impresora">
+          <div class="screen">
+            <div class="bar">
+              <p class="eyebrow">Oso articulado · 2 u. · PLA café</p>
+              <h3>Elige una impresora</h3>
+              <div class="filter"><span>Mostrar solo las libres</span><span class="switch" aria-hidden="true"></span></div>
+            </div>
+            <div class="body">
+              <div class="printers">
+                <div class="pc pick">
+                  <span class="ic" style="--c:var(--ok)"><svg><use href="#i-check"/></svg></span>
+                  <div><div class="nm">A1-03 <span class="tag">Sugerida</span></div><div class="st" style="--c:var(--ok)">Libre</div></div>
+                  <span class="fil"><span class="dot" style="background:#9a6a42"></span>PLA · AMS 2</span>
+                </div>
+                <div class="pc">
+                  <span class="ic" style="--c:var(--ok)"><svg><use href="#i-check"/></svg></span>
+                  <div><div class="nm">A1-07</div><div class="st" style="--c:var(--ok)">Libre</div></div>
+                  <span class="fil"><span class="dot" style="background:#f4f1ea"></span>PLA blanco</span>
+                  <div class="why" style="color:var(--pickup)">Tiene otro color cargado. El archivo pide PLA café.</div>
+                </div>
+                <div class="pc no">
+                  <span class="ic" style="--c:var(--run)"><svg><use href="#i-nozzle"/></svg></span>
+                  <div><div class="nm">A1-01</div><div class="st" style="--c:var(--run)">Imprimiendo</div></div>
+                  <span class="fil"><span class="dot" style="background:#1b1b1b"></span>PLA</span>
+                  <div class="prog"><div class="track" style="--p:62%"><i></i></div><span class="num">62 % · faltan 48 min · capa 112 de 180</span></div>
+                </div>
+                <div class="pc no">
+                  <span class="ic" style="--c:var(--pickup)"><svg><use href="#i-box"/></svg></span>
+                  <div><div class="nm">A1-05</div><div class="st" style="--c:var(--pickup)">Esperando retiro de pieza</div></div>
+                  <span></span>
+                  <div class="why">Terminó a las 10:42. Retira la pieza para liberarla.</div>
+                </div>
+                <div class="pc no">
+                  <span class="ic" style="--c:var(--pause)"><svg><use href="#i-pause"/></svg></span>
+                  <div><div class="nm">A1-02</div><div class="st" style="--c:var(--pause)">En pausa</div></div>
+                  <span></span>
+                </div>
+                <div class="pc no">
+                  <span class="ic" style="--c:var(--err)"><svg><use href="#i-alert"/></svg></span>
+                  <div><div class="nm">A1-09</div><div class="st" style="--c:var(--err)">Con error</div></div>
+                  <span></span>
+                  <div class="why">No tiene microSD. Avísale al administrador.</div>
+                </div>
+                <div class="pc no">
+                  <span class="ic" style="--c:var(--off)"><svg><use href="#i-off"/></svg></span>
+                  <div><div class="nm">A1-04</div><div class="st" style="--c:var(--off)">Sin conexión</div></div>
+                  <span></span>
+                  <div class="why">Revisa que esté encendida.</div>
+                </div>
+              </div>
+            </div>
+            <nav class="tabbar" aria-label="Navegación de ejemplo">
+              <span class="tab on"><svg><use href="#i-grid"/></svg>Imprimir</span>
+              <span class="tab"><svg><use href="#i-printer"/></svg>Impresoras</span>
+              <span class="tab"><svg><use href="#i-user"/></svg>Yo</span>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Confirmar -->
+        <div class="phone" aria-label="Pantalla de confirmación">
+          <div class="screen">
+            <div class="bar">
+              <p class="eyebrow">Último paso</p>
+              <h3>Confirma el envío</h3>
+            </div>
+            <div class="body">
+              <div class="summary">
+                <div class="ph" style="--tone:#2b2420">
+                  <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="32" cy="34" r="11" fill="#c98f5c"/><circle cx="68" cy="34" r="11" fill="#c98f5c"/><circle cx="50" cy="56" r="26" fill="#d9a06a"/><circle cx="41" cy="52" r="3" fill="#2a1a10"/><circle cx="59" cy="52" r="3" fill="#2a1a10"/><ellipse cx="50" cy="64" rx="9" ry="7" fill="#f0c9a0"/><circle cx="50" cy="62" r="3" fill="#2a1a10"/></svg>
+                </div>
+                <div>
+                  <div class="what">Oso articulado × 2</div>
+                  <div class="meta num">
+                    <span>En <b>A1-03</b></span>
+                    <span><b>2 h 14 min</b> · 38 g de PLA café</span>
+                  </div>
+                </div>
+              </div>
+              <div class="checks">
+                <label class="check" for="c-bed"><input type="checkbox" id="c-bed">La cama está limpia y vacía</label>
+                <label class="check" for="c-fil"><input type="checkbox" id="c-fil">El filamento correcto está cargado</label>
+              </div>
+              <button type="button" class="hold" id="hold" disabled aria-describedby="hold-hint"><span><svg width="24" height="24"><use href="#i-send"/></svg><b id="hold-label">Mantén para enviar</b></span></button>
+              <p class="hint" id="hold-hint">Marca las dos casillas para continuar.</p>
+            </div>
+            <nav class="tabbar" aria-label="Navegación de ejemplo">
+              <span class="tab on"><svg><use href="#i-grid"/></svg>Imprimir</span>
+              <span class="tab"><svg><use href="#i-printer"/></svg>Impresoras</span>
+              <span class="tab"><svg><use href="#i-user"/></svg>Yo</span>
+            </nav>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <section class="ask" aria-labelledby="h-ask">
+    <h2 id="h-ask">Qué necesito saber de ti</h2>
+    <ol>
+      <li>¿Te gusta la dirección general, oscura y sobria con acento naranja?</li>
+      <li>¿El naranja "brasa" te representa, o lo prefieres más rojo (cereza) o más dorado?</li>
+      <li>¿La tipografía condensada te parece con carácter y fácil de leer?</li>
+      <li>¿El símbolo de la boquilla al rojo te sirve como icono de la app?</li>
+      <li>¿El botón de mantener presionado te parece cómodo para tus operarias?</li>
+    </ol>
+  </section>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var buttons = document.querySelectorAll('.theme button');
+  function setTheme(t) {
+    if (t === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', t);
+    buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.t === t)); });
+    try { localStorage.setItem('bf-theme', t); } catch (e) {}
+  }
+  buttons.forEach(function (b) { b.addEventListener('click', function () { setTheme(b.dataset.t); }); });
+  try { var saved = localStorage.getItem('bf-theme'); if (saved) setTheme(saved); } catch (e) {}
+
+  // Botón de mantener presionado
+  var HOLD_MS = 1200;
+  var hold = document.getElementById('hold');
+  var label = document.getElementById('hold-label');
+  var hint = document.getElementById('hold-hint');
+  var checks = [document.getElementById('c-bed'), document.getElementById('c-fil')];
+  var start = 0, raf = 0, done = false;
+
+  function ready() { return checks.every(function (c) { return c.checked; }); }
+  function refresh() {
+    if (done) return;
+    hold.disabled = !ready();
+    hint.textContent = ready() ? 'Mantén presionado 1,2 segundos.' : 'Marca las dos casillas para continuar.';
+  }
+  checks.forEach(function (c) { c.addEventListener('change', refresh); });
+
+  function frame(now) {
+    var p = Math.min(1, (now - start) / HOLD_MS);
+    hold.style.setProperty('--p', p);
+    if (p >= 1) { finish(); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  function begin(e) {
+    if (hold.disabled || done) return;
+    if (e && e.preventDefault) e.preventDefault();
+    start = performance.now();
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(frame);
+    label.textContent = 'Sigue presionando…';
+  }
+  function cancel() {
+    if (done) return;
+    cancelAnimationFrame(raf);
+    hold.style.setProperty('--p', 0);
+    label.textContent = 'Mantén para enviar';
+  }
+  function finish() {
+    done = true;
+    cancelAnimationFrame(raf);
+    hold.style.setProperty('--p', 0);
+    hold.classList.add('done');
+    label.textContent = 'Enviado a A1-03';
+    hint.textContent = 'Es una muestra: no se envió nada.';
+    setTimeout(function () {
+      done = false;
+      hold.classList.remove('done');
+      label.textContent = 'Mantén para enviar';
+      checks.forEach(function (c) { c.checked = false; });
+      refresh();
+    }, 2600);
+  }
+  hold.addEventListener('pointerdown', begin);
+  hold.addEventListener('pointerup', cancel);
+  hold.addEventListener('pointerleave', cancel);
+  hold.addEventListener('pointercancel', cancel);
+  hold.addEventListener('keydown', function (e) { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) begin(e); });
+  hold.addEventListener('keyup', function (e) { if (e.key === ' ' || e.key === 'Enter') cancel(); });
+  hold.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  refresh();
+})();
+</script>

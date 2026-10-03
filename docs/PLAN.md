@@ -1,8 +1,9 @@
 # BlackForge Print — Plan de trabajo
 
 > Estado: **Fase 0, pendiente de tu aprobación.** No se escribe código de la
-> aplicación hasta que apruebes este plan y respondas las preguntas de la
-> sección 12.
+> aplicación hasta que apruebes este plan. Tus respuestas a las preguntas ya
+> están incorporadas (sección 12); queda por confirmar el equipo del servidor
+> (sección 12.2).
 
 ## 1. Qué vamos a construir, en una frase
 
@@ -83,7 +84,7 @@ del otro en vez de fallar en el taller.
 | Frontend | React 19 + Vite + Tailwind 4 + React Router + TanStack Query | TanStack Query maneja caché, reintentos y estados de carga/error de forma uniforme; SSE invalida la caché cuando cambia algo. |
 | Fuentes tipográficas | Incluidas en la app (no Google Fonts en vivo) | El celular no siempre tendrá internet; todo se sirve desde el servidor del taller. |
 | Pruebas | Vitest (unitarias/integración) + Playwright (extremo a extremo) | Estándar, rápidas, Playwright ya está disponible. |
-| Despliegue | Un contenedor Docker + Docker Compose, volumen `/data` | Lo pediste. Red `host` en Linux para el descubrimiento; en otros sistemas, puertos publicados y entrada manual. |
+| Despliegue | Un contenedor Docker + Docker Compose, volumen `/data`, en un **mini PC con Linux dentro del taller** (ver 12.2) | Lo pediste. Red `host` en Linux para el descubrimiento automático. Imagen para x86 y ARM64. |
 
 ### 3.3 ⚠️ El administrador entra con contraseña, no con PIN
 
@@ -210,9 +211,13 @@ POST /api/printers/:id/pause | resume | cancel
 3. **Producto:** foto grande, selector de cantidad como botones grandes
    ("1", "2", "4"…) solo con las disponibles; si hay una sola, ya viene
    seleccionada. Debajo: tiempo, gramos, filamento (tipo + muestra de color).
-4. **Impresora:** tarjetas con estado en vivo (color + icono + texto). Las no
-   libres se ven pero no se pueden tocar, con el motivo. Aviso claro si el
-   filamento cargado no coincide (tipo o color) con el del archivo.
+4. **Impresora:** tarjetas con estado en vivo (color + icono + texto). Con más
+   de 8 impresoras el orden importa: primero las **libres con el filamento
+   correcto** (marcadas "Sugerida"), luego las libres con otro filamento, y al
+   final las no disponibles, atenuadas y con el motivo. Filtro "Solo libres"
+   activado por defecto. Aviso claro si el filamento cargado no coincide (tipo
+   o color) con el del archivo; en las impresoras con AMS lite la app elige
+   sola la bandeja que coincide.
 5. **Confirmación:** resumen + dos casillas obligatorias + botón **mantener
    presionado 1,2 s** con anillo de progreso (más accesible que deslizar con una
    mano ocupada; si prefieres deslizar, se cambia).
@@ -251,9 +256,8 @@ Si no tienes logo ni colores, propongo "forja moderna":
   texto (el amarillo de "retiro" es distinto del naranja de acción).
 - **Tema claro** para el taller iluminado, con cambio automático o manual.
 
-Antes de aplicarla a toda la app te muestro una página de muestra (paleta,
-tipografía, tarjeta de producto, tarjeta de impresora en cada estado, botón de
-envío) y ajustamos.
+Muestra lista para revisar (sección 12.3). No se aplica a toda la app hasta
+tu visto bueno.
 
 ### 7.4 Instalable sin service worker
 
@@ -295,6 +299,9 @@ Un proceso que levanta N impresoras falsas, cada una con:
   zombi, terminar ya, cambiar filamento, quitar la microSD.
 - Cada impresora escucha en su propio puerto (`127.0.0.1:18883`, `:18990`, …),
   por eso los puertos de impresora son configurables.
+- Por defecto levanta **10 impresoras** (más de 8, como tu taller), mezclando
+  con AMS lite y con bobina externa, para probar la pantalla de selección y la
+  carga del servidor con un número realista.
 
 Lo ajustaremos con lo que observemos en tu A1 en la Fase 1.
 
@@ -349,20 +356,76 @@ Cada fase termina con un commit, un resumen y cómo probarla tú.
 | Subidas lentas por Wi-Fi | Trabajo del servidor con progreso; recomendación en el README de buena señal Wi-Fi para las impresoras (o IP fija + 2,4 GHz estable). |
 | Celulares Android sin modo "app" por HTTP | Acceso directo con icono; HTTPS local como opción posterior. |
 | Docker en Mac/Windows sin red `host` | Entrada manual de impresoras (el descubrimiento es opcional). |
+| Más de 8 impresoras conectando a la vez al arrancar | Conexiones escalonadas (unos segundos entre cada una) y `pushall` repartido en el tiempo. Recomendación en el README de IP fija para cada impresora y un buen punto de acceso Wi-Fi de 2,4 GHz. |
+| Se va la luz o el internet | El servidor está en el taller: sin internet todo sigue funcionando. Arranque automático al volver la luz (BIOS + Docker `restart: unless-stopped`). |
 
-## 12. Preguntas
+## 12. Tus respuestas y lo que cambian
 
-### Bloqueantes (te las hago aparte con opciones)
+### 12.1 Impresoras: más de 8, algunas con AMS lite y otras no
 
-1. **¿Cuántas A1 tienes y cuáles usan AMS lite?** Cambia el mapeo de filamento
-   y cómo se avisa la diferencia de filamento.
-2. **¿En qué equipo correrá el servidor?** (Raspberry Pi, mini PC con Linux,
-   Mac, PC con Windows). Cambia la arquitectura de la imagen Docker, si hay
-   descubrimiento automático y las instrucciones del README.
-3. **¿Tienes logo y colores de marca?** Si no, aplico la propuesta de la
-   sección 7.3 tras mostrártela.
+- **Detección automática por impresora:** la A1 informa por MQTT si tiene AMS
+  lite y qué hay en cada bandeja y en la bobina externa. No tienes que
+  configurarlo; si mueves un AMS lite de una impresora a otra, la app lo nota.
+- **Mapeo de filamento:** con AMS lite, la app busca la bandeja con el mismo
+  tipo y el color más cercano y arma el `ams_mapping` sola. Sin AMS lite,
+  compara con la bobina externa. Si nada coincide, aviso claro + confirmación extra.
+- **Selección de impresora pensada para 9+:** orden por conveniencia, etiqueta
+  "Sugerida", filtro "Solo libres" (sección 7.1).
+- **Arranque escalonado** de las conexiones y simulador con 10 impresoras.
+- **IP fija para cada impresora** pasa de recomendación a requisito en el README:
+  con 9+ impresoras, que el router reasigne IPs es casi seguro.
 
-### No bloqueantes (decido esto si no me dices otra cosa)
+### 12.2 Servidor: un servidor pagado en la nube no sirve para esto
+
+Entiendo la idea de "algo que siempre esté en línea", pero **un servidor en la
+nube no puede hablar con tus impresoras**, y te explico por qué:
+
+1. En "Modo solo LAN" las A1 solo aceptan conexiones **desde la red del
+   taller**. Un servidor en internet no puede abrir conexiones hacia las IPs
+   internas del taller (192.168.x.x).
+2. Para que funcionara haría falta un túnel o VPN desde el taller, que a su vez
+   **necesita un equipo encendido en el taller**. Pagarías dos veces y
+   sumarías un punto de falla.
+3. Si se cae el internet, **nadie podría imprimir**, aunque los celulares y las
+   impresoras estén en el mismo cuarto.
+4. Cada archivo viajaría por tu internet de subida hasta la impresora (más
+   lento), y la app quedaría expuesta a internet con PINs de 4 dígitos, que es
+   justo lo que el diseño evita.
+
+**Mi recomendación (mejor calidad-precio): un mini PC con procesador Intel
+N100/N150, 8–16 GB de RAM, SSD de 256–512 GB y puerto Ethernet**, con Linux
+(Ubuntu Server o Debian).
+
+- **Pago único**, del orden de 150–250 USD, en vez de una mensualidad.
+- Consume 6–10 W: menos de lo que gasta un bombillo LED encendido todo el día.
+- Sobra potencia para 10+ impresoras, procesar fotos y la base de datos.
+- **"Siempre en línea" en el taller:** cable de red al router, opción de la
+  BIOS "encender al volver la luz", Docker con reinicio automático y, si
+  quieres, una UPS pequeña que proteja también el router.
+- Alternativa: Raspberry Pi 5 de 8 GB **con SSD NVMe** (no microSD, que se
+  desgasta con la base de datos). Funciona, pero sumando carcasa, fuente y SSD
+  cuesta casi lo mismo que el mini PC y rinde menos.
+- **No cierra la puerta** al acceso desde fuera del taller (fuera del alcance de
+  esta versión): se puede agregar después con una VPN tipo Tailscale sobre este
+  mismo equipo, sin exponer la app a internet.
+
+Para desarrollar y probar no necesitas el equipo todavía: todo corre contra el
+simulador. Lo necesitarás para la prueba con la A1 real en la Fase 1 (sirve
+también tu computador conectado a la red del taller).
+
+> **Pendiente:** confírmame si vas con el mini PC con Linux (mi recomendación)
+> u otra opción. No bloquea empezar la Fase 1.
+
+### 12.3 Marca: propongo yo
+
+Preparé una **muestra de identidad visual** "forja moderna" (sección 7.3) con
+la paleta, la tipografía, una tarjeta de producto, las tarjetas de impresora en
+cada estado y el botón de envío, en tema oscuro y claro:
+[ver la muestra](https://claude.ai/artifact/DxQARTGv28GiGXejBSmRza)
+(archivo: [`docs/identidad/propuesta.html`](./identidad/propuesta.html)). Dime qué
+ajustar; no la aplico a toda la app hasta tu visto bueno (Fase 3).
+
+### 12.4 Decisiones no bloqueantes (las tomo así si no me dices otra cosa)
 
 | Tema | Mi decisión por defecto |
 |---|---|
@@ -372,4 +435,4 @@ Cada fase termina con un commit, un resumen y cómo probarla tú.
 | Archivos con varias placas laminadas | Al subir, eliges cuál placa usar (una placa = una cantidad). |
 | Retiro tras fallo o cancelación | También exige "Ya retiré la pieza" (puede quedar material en la cama). |
 | Opciones de impresión por defecto | Nivelación automática, calibración de vibración sí, flujo automático, timelapse no. |
-| Versión de firmware | Anótala para la Fase 1 (Ajustes → Firmware en la pantalla de la A1); no la necesito ahora. |
+| Versión de firmware | Anótala para la Fase 1 (en la pantalla de la A1: Ajustes → Firmware); no la necesito ahora. |
