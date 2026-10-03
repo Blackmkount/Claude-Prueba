@@ -8,19 +8,26 @@ celular en menos de 30 segundos.
 
 - Plan y fases: [`blackforge/PLAN.md`](blackforge/PLAN.md)
 - Protocolo de la A1 y lo observado en la impresora real: [`blackforge/protocolo-a1.md`](blackforge/protocolo-a1.md)
-- Instalar Bambuddy en el Mac del taller (Fase 1): [`blackforge/instalar-en-mac.md`](blackforge/instalar-en-mac.md)
+- Pasar el Mac del taller a BlackForge Print y actualizarlo: [`blackforge/actualizar-en-mac.md`](blackforge/actualizar-en-mac.md)
+  (imagen propia con [`blackforge/docker-compose.mac.yml`](blackforge/docker-compose.mac.yml); la Fase 1 con la imagen oficial está en `blackforge/instalar-en-mac.md`)
+- Simulador de A1 para desarrollar: [`blackforge/simulador/`](blackforge/simulador/README.md)
 - Identidad visual aprobada: [`blackforge/identidad/propuesta.html`](blackforge/identidad/propuesta.html)
 - Documentación de Bambuddy: `README.md`, `CONTRIBUTING.md` y <https://wiki.bambuddy.cool>
 
-**Estado actual:** Fase 1 (revisada). Parada: el dueño instala Bambuddy sin
-cambios en su Mac, conecta su A1 e imprime una prueba.
+**Estado actual:** Fase 2 (base BlackForge) entregada. Parada: el dueño la
+instala en su Mac con `blackforge/actualizar-en-mac.md` y la revisa. Siguiente:
+Fase 3 (catálogo de productos). Fase 1 validada el 2026-10-03 (Bambuddy oficial
+en Docker en el Mac, con la A1 conectada).
 
 Verificado en el entorno de desarrollo (2026-10-03, base `ecddbf2b`):
-backend con Python 3.11 — 9 892 pruebas unitarias y 3 683 de integración en
-verde; el servidor arranca y responde `/health`. El frontend no se puede
-instalar en la nube mientras `cdn.sheetjs.com` (dependencia `xlsx`) esté
-bloqueado por la política de red del entorno: hay que agregarlo a los dominios
-permitidos.
+backend con Python 3.11 — 13 584 pruebas en verde (unitarias, integración,
+auditoría de autenticación de rutas y las nuestras); frontend con tsc, eslint,
+`check:i18n`, `vite build` y vitest (4 173 en verde; las 2 de
+`SpreadsheetPreviewModal` fallan solo por el sustituto de `xlsx`). El frontend no se puede instalar en la nube mientras
+`cdn.sheetjs.com` (dependencia `xlsx`) esté bloqueado por la política de red
+del entorno: hay que agregarlo a los dominios permitidos. Mientras tanto se
+usa un sustituto local de `xlsx` enlazado en `frontend/node_modules` (nunca
+subir cambios a `package.json` ni `package-lock.json` por eso).
 
 ## Cómo trabajamos
 
@@ -44,7 +51,18 @@ un `git merge` sin pelear conflictos. Por eso:
 - Los **puntos de enganche** con el código de Bambuddy (registrar un router,
   una ruta del frontend, una hoja de estilos) se reducen al mínimo, se marcan
   con el comentario `# BLACKFORGE:` / `// BLACKFORGE:` y se listan en
-  `blackforge/PLAN.md` (sección «Puntos de enganche»).
+  `blackforge/PLAN.md` (sección «Puntos de enganche»; `git grep BLACKFORGE`).
+  Hoy: `backend/app/main.py`, `frontend/src/main.tsx`, `ThemeContext.tsx`,
+  `Layout.tsx`, `frontend/index.html`, los 3 `frontend/public/img/bambuddy_logo_*.png`
+  (reemplazados), `Dockerfile` y `.dockerignore`.
+- Las banderas de `frontend/src/blackforge/theme/config.ts` (solo oscuro, sin
+  botón de reportes) se apagan bajo vitest para que las pruebas de Bambuddy no
+  cambien; nuestras pruebas (`frontend/src/blackforge/__tests__/`) las encienden
+  con `vi.mock`.
+- **Ajustes del taller**: `TALLER_DEFAULT_SETTINGS` (`backend/app/blackforge/constants.py`)
+  se aplica una sola vez por clave al arrancar (registro en la tabla
+  `blackforge_state`), porque la página de Ajustes de Bambuddy guarda todos sus
+  valores por defecto al visitarla. Si el administrador lo cambia después, se respeta.
 - **Tablas nuevas, no columnas nuevas** en tablas de Bambuddy: nuestros modelos
   SQLAlchemy se registran en su `Base` y `create_all` los crea al arrancar, sin
   tocar `backend/app/core/database.py`.
@@ -91,11 +109,26 @@ npm run build
 docker compose up -d --build
 ```
 
+Cuidados propios de este repositorio:
+
+- **Nunca subir `static/`**: Bambuddy versiona ahí el frontend compilado y
+  `npm run build` lo sobrescribe. La imagen Docker compila el frontend por su
+  cuenta. Para compilar a mano: `npx vite build --outDir <carpeta temporal>`;
+  si se tocó, `git checkout -- static/ && git clean -fdq static/`.
+- Si cambian logos o iconos, subir `BLACKFORGE_ASSET_VERSION` en
+  `frontend/src/blackforge/preboot.ts` (borra la caché del service worker).
+- Simulador conectado a Bambuddy: `sudo npm run sim -- --ip-base 127.0.0.2 --impresoras 3 --sin-puback`
+  en `blackforge/simulador/` (ver su README).
+- Imagen para el Mac: `docker compose -f blackforge/docker-compose.mac.yml up -d --build`
+  (proyecto `bambuddy`, mismos volúmenes que la instalación oficial).
+
 ## Licencia (AGPL-3.0)
 
 - Se conserva `LICENSE` y el crédito a Bambuddy y sus autores.
 - Quienes usan la app por la red (las operarias) deben poder obtener el código
-  fuente de nuestra versión: la app tendrá un enlace «Código fuente» (Fase 2).
+  fuente de nuestra versión: enlace «Código fuente» en la barra lateral, que
+  descarga el paquete que la etapa `blackforge-source` del `Dockerfile` mete en
+  la imagen (`GET /api/v1/blackforge/codigo-fuente`).
 - Si algún día se distribuye el software, también debe ser AGPL-3.0.
 
 ## Seguridad (no negociable)

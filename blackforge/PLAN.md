@@ -1,7 +1,9 @@
 # BlackForge Print — Plan sobre Bambuddy
 
-> Estado: **Fase 1 (revisada)** — validar Bambuddy con la A1 real.
-> Base: Bambuddy `main` en el commit `ecddbf2b` (2 de octubre de 2026).
+> Estado: **Fase 2 (base BlackForge) entregada** — el dueño la instala en el Mac
+> con [`actualizar-en-mac.md`](./actualizar-en-mac.md) y la revisa.
+> Fase 1 validada el 3 de octubre de 2026: Bambuddy oficial en el Mac con la A1 conectada.
+> Base: Bambuddy `main` en el commit `ecddbf2b` (2 de octubre de 2026, incluye la v1.2.5.7).
 > El trabajo anterior en TypeScript (plan original, módulo de impresora,
 > simulador y CLI) quedó archivado en la rama `archivo/typescript`.
 
@@ -47,7 +49,7 @@ Lo que implica:
 | **Entrada con nombre + PIN de 4 dígitos** | ❌ (usuario + contraseña, 2FA, SSO) | **Construir** (Fase 4) |
 | **Doble toque o reintento no imprime dos veces** | ❌ (la cola no tiene clave de idempotencia) | **Construir** en nuestro endpoint (Fase 4) |
 | Instalable en el celular | ~ (tiene manifiesto e iconos) | Manifiesto propio del modo taller, icono configurable |
-| Simulador para probar sin impresoras | ❌ | Adaptar nuestro simulador archivado (Fase 1b) |
+| Simulador para probar sin impresoras | ❌ | Hecho: `blackforge/simulador/` (modo `--ip-base` para Bambuddy) |
 
 ## 3. Arquitectura de lo que añadimos
 
@@ -83,21 +85,36 @@ Claves del diseño:
 
 ## 4. Puntos de enganche con el código de Bambuddy
 
-Se mantendrán al mínimo y marcados con `BLACKFORGE:`. Previstos:
+Todo lo demás vive en nuestras carpetas. Estos son los únicos cambios en
+archivos de Bambuddy, marcados con `BLACKFORGE:` (`git grep BLACKFORGE`). Si un
+merge de Bambuddy choca aquí, se conserva su cambio y se vuelve a poner el nuestro.
 
 | Archivo de Bambuddy | Cambio |
 |---|---|
-| `backend/app/main.py` | Importar y registrar el router de `backend/app/blackforge` |
-| `frontend/src/App.tsx` (o el enrutador) | Montar las rutas del modo taller |
-| `frontend/src/main.tsx` | Cargar los textos y el tema de BlackForge |
-| `.github/workflows/*`, `.github/CODEOWNERS` | Eliminados (ya hecho) |
+| `backend/app/main.py` (2) | Registrar el router de `backend/app/blackforge`; llamar a `on_startup()` al final del arranque (ajustes del taller) |
+| `frontend/src/main.tsx` (2) | Importar `blackforge/preboot` antes de i18n (español, tema oscuro, limpieza de caché) y `blackforge/boot` después (tema y textos) |
+| `frontend/src/contexts/ThemeContext.tsx` (1) | Solo tema oscuro (`BLACKFORGE_DARK_ONLY`) |
+| `frontend/src/components/Layout.tsx` (3) | Pie «Basado en Bambuddy · Código fuente»; ocultar el botón de reportar errores (flotante y en el encabezado del celular) |
+| `frontend/index.html` | Nombre, idioma, color, manifiesto e iconos de `public/blackforge/` |
+| `frontend/public/img/bambuddy_logo_{dark,dark_transparent,light}.png` | Reemplazados por el logo BlackForge (mismo nombre, para no tocar el código que los usa). En un conflicto, conservar los nuestros |
+| `Dockerfile` (2) | Etapa `blackforge-source` que empaqueta el código fuente (AGPL) y lo copia a la imagen |
+| `.dockerignore` | Volver a incluir `Dockerfile`, `docker-compose*.yml` y `*.md` en ese paquete |
+| `.github/workflows/*`, `.github/CODEOWNERS` | Eliminados (usan credenciales de Bambuddy) |
+| `CLAUDE.md` | Versionado con `git add -f` (Bambuddy lo ignora) |
+
+Previsto para la Fase 4: montar las rutas del modo taller en el enrutador
+(`frontend/src/App.tsx`).
+
+Las banderas de `frontend/src/blackforge/theme/config.ts` se apagan en las
+pruebas (vitest) para que las pruebas de Bambuddy sigan probando su
+comportamiento sin modificarlas; las nuestras las encienden con `vi.mock`.
 
 ## 5. Fases
 
 | Fase | Entregable | Cómo la pruebas tú |
 |---|---|---|
-| **1. Validación (revisada)** | a) Tú: Bambuddy oficial en el Mac con Docker, tu A1 agregada y una impresión de prueba desde Bambuddy. b) Yo: entorno de desarrollo, pruebas de Bambuddy corriendo y el simulador adaptado para conectarlo. | Seguir [`instalar-en-mac.md`](./instalar-en-mac.md) y contarme cómo fue. **Parada** hasta que confirmes que tu A1 imprime desde Bambuddy. |
-| **2. Base BlackForge** | Identidad (oscuro, cereza, Montserrat), español de Colombia, enlace «Código fuente», ajustes del taller por defecto (cama despejada, opciones de impresión), integración continua propia mínima. | Abrir la app y revisarla. |
+| **1. Validación (revisada)** ✅ | a) Tú: Bambuddy oficial en el Mac con Docker, tu A1 agregada y una impresión de prueba desde Bambuddy. b) Yo: entorno de desarrollo, pruebas de Bambuddy corriendo y el simulador adaptado para conectarlo. | Seguir [`instalar-en-mac.md`](./instalar-en-mac.md) y contarme cómo fue. **Parada** hasta que confirmes que tu A1 imprime desde Bambuddy. |
+| **2. Base BlackForge** ✅ | Identidad (oscuro, cereza, Montserrat, logos e iconos), español por defecto, enlace «Código fuente» con el paquete del código en la imagen, ajustes del taller aplicados una vez (cama despejada; sin anuncios ni aviso de versiones de Bambuddy), sin botón de reportes a Bambuddy, imagen propia para el Mac (`docker-compose.mac.yml`). La integración continua propia queda para la Fase 5. | Seguir [`actualizar-en-mac.md`](./actualizar-en-mac.md) y revisar la app. |
 | **3. Catálogo de productos** | Productos con foto, categoría y notas; variantes por cantidad enlazadas a archivos de la biblioteca (sugerencia de cantidad por nombre, aviso de otro modelo, rechazo de archivos sin laminar); totales por producto. | Crear un producto con 3 cantidades en menos de 2 minutos. |
 | **4. Modo taller** | Entrada con nombre + PIN, galería, cantidad, impresora libre con aviso de filamento, confirmación (2 casillas + mantener presionado), progreso, «Ya retiré la pieza», pausar/reanudar/cancelar; idempotencia; pruebas de extremo a extremo con Playwright. | Enviar una impresión desde el celular en menos de 30 s. |
 | **5. Entrega** | Imagen Docker propia para el Mac, README en español, procedimiento para traer actualizaciones de Bambuddy, copias de seguridad. | Instalar desde cero siguiendo el README. |

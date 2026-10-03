@@ -10061,6 +10061,11 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logging.warning("Failed to sync virtual printers: %s", e)
 
+    # BLACKFORGE: arranque de BlackForge Print (ajustes del taller por defecto).
+    from backend.app.blackforge import on_startup as blackforge_on_startup
+
+    await blackforge_on_startup()
+
     yield
 
     # Shutdown
@@ -10685,6 +10690,10 @@ app.include_router(obico.router, prefix=app_settings.api_prefix)
 app.include_router(metrics.router, prefix=app_settings.api_prefix)
 app.include_router(virtual_printers.router, prefix=app_settings.api_prefix)
 app.include_router(spoolbuddy.router, prefix=app_settings.api_prefix)
+# BLACKFORGE: rutas de BlackForge Print (backend/app/blackforge).
+from backend.app.blackforge import router as blackforge_router  # noqa: E402
+
+app.include_router(blackforge_router, prefix=app_settings.api_prefix)
 
 
 # Serve static files (React build)

@@ -14,6 +14,14 @@ COPY frontend/ ./
 RUN npm run build
 
 # Production image
+# BLACKFORGE: paquete con el código fuente de esta versión (AGPL-3.0 §13).
+# La app lo sirve en /api/v1/blackforge/codigo-fuente. Usa el contexto de
+# construcción (ya sin datos, .env, venv ni node_modules; ver .dockerignore).
+FROM python:3.13-slim-trixie AS blackforge-source
+WORKDIR /src
+COPY . .
+RUN tar --exclude=./frontend/node_modules --exclude=./.git --exclude=__pycache__ --exclude="*.pyc" -czf /blackforge-codigo-fuente.tar.gz .
+
 FROM python:3.13-slim-trixie
 
 WORKDIR /app
@@ -71,6 +79,8 @@ COPY .git/HEAD ./.git/HEAD
 
 # Copy built frontend from builder stage
 COPY --from=frontend-builder /app/static ./static
+# BLACKFORGE: código fuente para descargar desde la app.
+COPY --from=blackforge-source /blackforge-codigo-fuente.tar.gz /app/blackforge-codigo-fuente.tar.gz
 
 # Create data directories. Ownership is normalised at startup by the
 # entrypoint (chowns to PUID:PGID and drops privileges via gosu before

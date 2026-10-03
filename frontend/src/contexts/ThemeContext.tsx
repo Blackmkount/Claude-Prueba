@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { api } from '../api/client';
 import { useAuth } from './AuthContext';
+import { BLACKFORGE_DARK_ONLY } from '../blackforge/theme/config'; // BLACKFORGE
 
 type ThemeMode = 'light' | 'dark' | 'system';
 type ThemeStyle = 'classic' | 'glow' | 'vibrant';
@@ -66,7 +67,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Resolved mode: what's actually applied (always 'light' or 'dark')
-  const resolvedMode: 'light' | 'dark' = mode === 'system' ? systemPreference : mode;
+  // BLACKFORGE: identidad del taller, solo tema oscuro.
+  const resolvedMode: 'light' | 'dark' = BLACKFORGE_DARK_ONLY ? 'dark' : mode === 'system' ? systemPreference : mode;
 
   // Dark mode settings
   const [darkStyle, setDarkStyleState] = useState<ThemeStyle>(() => {

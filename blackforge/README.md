@@ -10,7 +10,10 @@ un producto, la cantidad y una impresora libre, y envían a imprimir en menos de
 | Documento | Para qué |
 |---|---|
 | [`PLAN.md`](./PLAN.md) | Plan, fases, qué aporta Bambuddy y qué construimos |
-| [`instalar-en-mac.md`](./instalar-en-mac.md) | Probar Bambuddy en el Mac del taller con la A1 (Fase 1) |
+| [`actualizar-en-mac.md`](./actualizar-en-mac.md) | Pasar el Mac del taller a BlackForge Print y actualizarlo |
+| [`instalar-en-mac.md`](./instalar-en-mac.md) | Probar Bambuddy oficial en el Mac con la A1 (Fase 1, ya hecha) |
+| [`docker-compose.mac.yml`](./docker-compose.mac.yml) | Construir y correr nuestra imagen en el Mac |
+| [`simulador/`](./simulador/) | Impresoras A1 falsas para desarrollar y probar sin el taller |
 | [`protocolo-a1.md`](./protocolo-a1.md) | Protocolo LAN de la A1 y lo observado en la impresora real |
 | [`identidad/propuesta.html`](./identidad/propuesta.html) | Identidad visual aprobada |
 

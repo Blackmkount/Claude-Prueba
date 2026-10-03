@@ -1,0 +1,72 @@
+/* BlackForge Print — identidad visual sobre los tokens de tema de Bambuddy.
+   Bambuddy pinta todo con variables CSS (--accent, --bg-*, --text-*) que pone
+   en <html> según las clases .dark, .bg-*, .accent-*. Aquí las redefinimos con
+   mayor especificidad (:root:root:root le gana a .dark.bg-cool), así la
+   identidad se mantiene sin importar el estilo, fondo o acento elegidos en
+   Ajustes. Identidad: blackforge/identidad/propuesta.html. */
+
+/* Montserrat, autoalojada (OFL 1.1, ver /blackforge/fonts/OFL-Montserrat.txt). */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/blackforge/fonts/montserrat-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/blackforge/fonts/montserrat-latin-ext-wght-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root:root:root {
+  /* Paleta BlackForge */
+  --bf-hollin: #110f0e;
+  --bf-carbon: #1a1716;
+  --bf-yunque: #24201e;
+  --bf-linea: #36312e;
+  --bf-ceniza: #a39b94;
+  --bf-cal: #f3eee9;
+  --bf-cereza: #d62839;
+  --bf-cereza-claro: #e8404f;
+  --bf-cereza-oscuro: #b01e30;
+  --bf-cereza-tinta: #ff5c6c;
+  --bf-coral: #ff7a5c;
+
+  /* Acento único: rojo cereza (texto blanco encima) */
+  --accent: var(--bf-cereza);
+  --accent-light: var(--bf-cereza-claro);
+  --accent-dark: var(--bf-cereza-oscuro);
+
+  /* Tipografía */
+  --font-sans: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans);
+}
+
+:root:root:root.dark {
+  --bg-primary: var(--bf-hollin);
+  --bg-secondary: var(--bf-carbon);
+  --bg-tertiary: var(--bf-yunque);
+  --text-primary: var(--bf-cal);
+  --text-secondary: #cfc7c0;
+  --text-muted: var(--bf-ceniza);
+  --text-tertiary: #8f8780;
+  --border-color: var(--bf-linea);
+
+  /* Estados: el error es coral, distinto del cereza de acción */
+  --status-ok: #45c486;
+  --status-error: var(--bf-coral);
+  --status-warning: #f2c94c;
+
+  --card-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 12px 32px -18px rgb(0 0 0 / 0.8);
+}
+
+/* Montserrat es más ancha que Inter: un poco menos de tamaño base evita que las
+   pantallas densas del panel se desborden. */
+html:root:root {
+  font-size: 14px;
+}

@@ -1,0 +1,37 @@
+# BlackForge Print en el Mac del taller (Docker Desktop, Apple Silicon).
+#
+# Construye la imagen desde este repositorio (Bambuddy + lo de BlackForge) en
+# vez de descargar la imagen oficial de Bambuddy. Desde la raíz del repositorio:
+#
+#   docker compose -f blackforge/docker-compose.mac.yml up -d --build
+#
+# Conserva los datos de la instalación de la Fase 1 (impresoras, archivos,
+# historial, usuarios): el proyecto se llama «bambuddy», igual que la carpeta
+# ~/bambuddy de entonces, así que usa los mismos volúmenes
+# (bambuddy_bambuddy_data y bambuddy_bambuddy_logs). Ver blackforge/instalar-en-mac.md.
+name: bambuddy
+
+services:
+  bambuddy:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: blackforge-print:local
+    container_name: bambuddy
+    # Docker Desktop para Mac no permite la red "host": se publica el puerto.
+    # Las impresoras se agregan a mano por IP (el descubrimiento automático no
+    # cruza la red de Docker en Mac).
+    ports:
+      - "8000:8000"
+    volumes:
+      - bambuddy_data:/app/data
+      - bambuddy_logs:/app/logs
+    environment:
+      - TZ=America/Bogota
+      - PORT=8000
+    restart: unless-stopped
+    stop_grace_period: 30s
+
+volumes:
+  bambuddy_data:
+  bambuddy_logs:

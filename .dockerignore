@@ -58,3 +58,9 @@ docs/
 Dockerfile
 docker-compose*.yml
 .dockerignore
+
+# BLACKFORGE: el paquete de código fuente (AGPL) debe llevar también las
+# instrucciones de construcción y la documentación.
+!Dockerfile
+!docker-compose*.yml
+!*.md

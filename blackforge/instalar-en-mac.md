@@ -1,5 +1,8 @@
 # Fase 1 (revisada) — Bambuddy en el Mac del taller con tu A1
 
+> ✅ Hecha el 3 de octubre de 2026. Para pasar a BlackForge Print (Fase 2 en
+> adelante) sigue [`actualizar-en-mac.md`](./actualizar-en-mac.md).
+
 Objetivo: comprobar que Bambuddy, **sin modificaciones**, se conecta con tu A1
 e imprime. Si esto funciona, toda la base técnica está validada y nos
 dedicamos solo a lo que falta (modo taller y catálogo).

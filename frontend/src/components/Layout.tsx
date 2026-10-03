@@ -32,6 +32,8 @@ import {
   saveSidebarOrder,
   SIDEBAR_LAYOUT_CHANGED_EVENT,
 } from '../utils/sidebarLayout';
+import { BlackForgeSidebarFooter } from '../blackforge/components/SidebarFooter'; // BLACKFORGE
+import { BLACKFORGE_HIDE_BUG_REPORT } from '../blackforge/theme/config'; // BLACKFORGE
 
 
 interface NavItem {
@@ -592,6 +594,8 @@ export function Layout() {
             className="h-8 ml-3"
           />
           {/* Bug report — the compact-layout home of the floating bubble. */}
+          {/* BLACKFORGE: los reportes de error van a los autores de Bambuddy; se ocultan. */}
+          {!BLACKFORGE_HIDE_BUG_REPORT && (
           <button
             onClick={() => setBugReportOpen(true)}
             className={`ml-auto p-2 -mr-2 rounded-lg hover:bg-bambu-dark-tertiary transition-colors ${
@@ -602,6 +606,7 @@ export function Layout() {
           >
             <Bug className={`w-5 h-5 ${bugReportLogging ? 'animate-pulse' : ''}`} />
           </button>
+          )}
         </header>
       )}
 
@@ -857,6 +862,8 @@ export function Layout() {
                   </>
                 )}
               </div>
+              {/* BLACKFORGE: crédito a Bambuddy y enlace al código fuente (AGPL) */}
+              <BlackForgeSidebarFooter />
               {/* Bottom row: version */}
               <div className="flex items-center justify-center gap-2">
                 <span className="text-sm text-bambu-gray">v{versionInfo?.version || '...'}</span>
@@ -1294,7 +1301,8 @@ export function Layout() {
           z-50 panel at the header's level and bury it under every ordinary
           modal in the app. */}
       <BugReportBubble
-        showTrigger={!isSidebarCompact}
+        // BLACKFORGE: sin botón de reportar errores a Bambuddy (envía datos a terceros).
+        showTrigger={!isSidebarCompact && !BLACKFORGE_HIDE_BUG_REPORT}
         open={bugReportOpen}
         onOpenChange={setBugReportOpen}
         onLoggingChange={setBugReportLogging}
