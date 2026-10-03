@@ -13,8 +13,14 @@ celular en menos de 30 segundos.
 - Documentación de Bambuddy: `README.md`, `CONTRIBUTING.md` y <https://wiki.bambuddy.cool>
 
 **Estado actual:** Fase 1 (revisada). Parada: el dueño instala Bambuddy sin
-cambios en su Mac, conecta su A1 e imprime una prueba. Mientras tanto: preparar
-el entorno de desarrollo y correr las pruebas de Bambuddy.
+cambios en su Mac, conecta su A1 e imprime una prueba.
+
+Verificado en el entorno de desarrollo (2026-10-03, base `ecddbf2b`):
+backend con Python 3.11 — 9 892 pruebas unitarias y 3 683 de integración en
+verde; el servidor arranca y responde `/health`. El frontend no se puede
+instalar en la nube mientras `cdn.sheetjs.com` (dependencia `xlsx`) esté
+bloqueado por la política de red del entorno: hay que agregarlo a los dominios
+permitidos.
 
 ## Cómo trabajamos
 
