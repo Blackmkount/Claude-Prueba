@@ -1,0 +1,17 @@
+{
+  "name": "@blackforge/simulator",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Simulador de impresoras Bambu Lab A1 (MQTT + FTPS falsos) para desarrollo y pruebas.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./testing": "./src/testing.ts"
+  },
+  "dependencies": {
+    "@blackforge/threemf": "*",
+    "@peculiar/x509": "^2.1.0",
+    "aedes": "^1.2.0",
+    "reflect-metadata": "^0.2.2"
+  }
+}

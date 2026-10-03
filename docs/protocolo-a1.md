@@ -50,9 +50,11 @@ Fuentes (revisadas el 2026-10-03, rama principal de cada repositorio):
 
 ### 2.1 Certificado TLS: se puede verificar, no hay que aceptarlo a ciegas
 
-El certificado de la impresora está firmado por la CA de Bambu
-(`CN = BBL CA2 RSA`, `O = BBL Technologies Co. Ltd`, vence en 2050) y su
-`CN` es **el número de serie de la impresora**. Con MQTT.js basta con pasar
+El certificado de la impresora está firmado por la CA de Bambu y su `CN` es
+**el número de serie de la impresora**. El conjunto de CA públicas de Bambu
+tiene 5 certificados: `BBL CA` (raíz antigua, vence en 2032) y `BBL CA2` RSA y
+ECC (vencen en 2050), estas últimas también firmadas por `BBL CA`. Las incluimos
+todas en `packages/printer/src/bambu-ca.ts`. Con MQTT.js basta con pasar
 `ca: <CA de Bambu>` y `servername: <serie>`: Node valida la cadena **y** que el
 certificado pertenece a esa impresora. *Fuente: OpenBambuAPI `tls.md` y
 `examples/mqtt.js`; ha-bambulab `pybambu/certs/bambu.cert` (mismo certificado,
@@ -82,11 +84,22 @@ Estado completo bajo pedido:
 ```
 
 Pedirlo al conectar y **no más de una vez cada 5 minutos** (el hardware de la
-P1P se resiente; aplicamos la misma regla a la A1).
+P1P se resiente; aplicamos la misma regla a la A1). Única excepción, tras una
+reconexión: se permite si pasó al menos 1 minuto desde el anterior, porque sin
+él no podemos saber si algo cambió mientras estábamos desconectados.
+
+**Cuándo el estado es confiable** (`stateValid` en el módulo): hay conexión y
+llegó un **reporte completo** después de la última (re)conexión. Mientras la
+conexión siga viva, TCP garantiza que no se pierden reportes parciales; tras un
+corte, un parcial no basta. Reconocemos el reporte completo por `msg: 0` o por
+traer `gcode_state` junto con al menos 20 campos. **[VERIFICAR EN A1 REAL]**
+si la respuesta a `pushall` trae `msg: 0`.
 
 **Conexión "zombi":** en P1/A1 se ha visto que el broker deja de publicar
 pero la conexión TCP sigue viva. Bambuddy fuerza reconexión si pasan 60 s sin
-mensajes. Haremos lo mismo (vigilante de silencio por impresora).
+mensajes. Nosotros, en vez de reconectar a ciegas (una impresora quieta puede
+estar callada legítimamente), tras 60 s de silencio preguntamos `get_version`;
+si no responde en 10 s, reconectamos.
 
 ### 2.4 Campos que usamos
 
@@ -111,7 +124,18 @@ mensajes. Haremos lo mismo (vigilante de silencio por impresora).
 (captura real de una A1 con AMS lite, firmware 01.05.00.00);
 Bambuddy (`_HMS_USER_ACTION_CODES`, `_ACTIVE_PRINT_STATES`).*
 
-### 2.5 Identificar el modelo
+### 2.5 Saber si el Modo desarrollador está activo, ANTES de imprimir
+
+El campo `print.fun` (cadena hexadecimal) trae el bit `0x20000000`
+(`MQTT_SIGNATURE_REQUIRED`): si está activo, la impresora exige comandos
+firmados, es decir, el Modo desarrollador está **apagado**. Valores capturados:
+`3EC1AFFF9CFF` = apagado, `3EC18FFF9CFF` = activo.
+*Fuente: ha-bambulab `pybambu/const.py` (`Print_Fun_Values`) y `models.py`.*
+Así la app avisa antes de subir nada, además de detectar el HMS
+`0500050000010007` si llega a ocurrir. **[VERIFICAR EN A1 REAL]** que tu
+firmware envía `fun`.
+
+### 2.6 Identificar el modelo
 
 - Por MQTT: `{"info":{"sequence_id":"0","command":"get_version"}}` → módulo
   `ota`/`esp32` con `project_name`: **`N2S` = A1**, `N1` = A1 mini.
@@ -292,3 +316,10 @@ es una ayuda opcional y la entrada manual (IP + serie + código) siempre está.
 - [ ] Verificación del certificado con la CA de Bambu y `servername = serie`.
 - [ ] Qué reporta la impresora al terminar, al cancelar y al reiniciarse con una pieza en la cama.
 - [ ] Si una subcarpeta en la microSD (p. ej. `/blackforge/`) funciona y evita las impresiones fantasma.
+- [ ] Si la A1 repite nuestro `task_id`/`subtask_id` en su estado al arrancar (si no, confirmamos por cambio de estado).
+- [ ] Si llega el campo `fun` y con qué valor.
+- [ ] Si la respuesta a `pushall` trae `msg: 0`.
+- [ ] Cuánto silencio hay en reposo (para el vigilante de 60 s).
+
+Estas preguntas se responden con el CLI (`npm run cli -- diagnostico` e
+`imprimir`); ver [`docs/fase-1-prueba-real.md`](./fase-1-prueba-real.md).

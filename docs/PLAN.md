@@ -1,9 +1,8 @@
 # BlackForge Print — Plan de trabajo
 
-> Estado: **Fase 0, pendiente de tu aprobación.** No se escribe código de la
-> aplicación hasta que apruebes este plan. Tus respuestas a las preguntas ya
-> están incorporadas (sección 12); queda por confirmar el equipo del servidor
-> (sección 12.2).
+> Estado: **Plan aprobado (Fase 0).** Fase 1 lista contra el simulador;
+> esperando la prueba con la A1 real (ver [`fase-1-prueba-real.md`](./fase-1-prueba-real.md)).
+> Las decisiones posteriores a la aprobación están en la sección 13.
 
 ## 1. Qué vamos a construir, en una frase
 
@@ -55,14 +54,21 @@ donde me aparto** (marcados con ⚠️), para que los apruebes.
 Un solo repositorio con espacios de trabajo de npm:
 
 ```
-apps/server      Servidor Fastify: API, módulo de impresoras, trabajos, SSE
-apps/web         App React (operaria + administrador)
-packages/shared  Tipos y validaciones (zod) que comparten servidor y web
-tools/simulator  Simulador de A1 (MQTT + FTPS falsos)
-tools/cli        Script de prueba del protocolo (Fase 1)
-e2e/             Pruebas de extremo a extremo con Playwright
-docs/            Plan, protocolo, decisiones
+apps/server        Servidor Fastify: API, trabajos, reglas, SSE           (Fase 2)
+apps/web           App React (operaria + administrador)                   (Fases 3–4)
+packages/printer   Módulo de impresora: MQTT, FTPS, estado, comandos      (Fase 1 ✓)
+packages/threemf   Lectura de archivos .gcode.3mf                         (Fase 1 ✓)
+packages/shared    Tipos y validaciones (zod) que comparten servidor y web (Fase 2)
+tools/simulator    Simulador de A1 (MQTT + FTPS falsos)                   (Fase 1 ✓)
+tools/cli          Script de prueba del protocolo                         (Fase 1 ✓)
+e2e/               Pruebas de extremo a extremo con Playwright            (Fase 3)
+docs/              Plan, protocolo, decisiones
 ```
+
+El módulo de impresora quedó como paquete propio (`packages/printer`) en vez
+de vivir dentro de `apps/server`, para que el CLI de la Fase 1 y el servidor
+usen **exactamente el mismo código**: lo que validamos en tu A1 es lo que
+correrá en producción.
 
 **Por qué:** un solo lugar, un solo `npm install`, y los tipos de la API se
 comparten entre servidor y web para que un cambio en uno rompa la compilación
@@ -243,21 +249,22 @@ usuarios, historial con totales y CSV, ajustes, copia de seguridad,
 **registro técnico** (aquí quedan los códigos y detalles que la operaria no ve)
 y un **código QR** para abrir la app en un celular nuevo.
 
-### 7.3 Identidad visual (propuesta preliminar, sujeta a tu respuesta)
+### 7.3 Identidad visual (aprobada con ajustes)
 
-Si no tienes logo ni colores, propongo "forja moderna":
+"Forja moderna", [ver la muestra](https://claude.ai/artifact/DxQARTGv28GiGXejBSmRza):
 
-- **Superficies:** carbón y hierro (`#0E0E10`, `#17171A`, `#222226`), bordes finos.
-- **Un solo acento cálido:** "brasa", naranja incandescente (`#FF5A1F`;
-  `#D9480F` en tema claro para mantener contraste AA). Reservado para la acción principal.
-- **Tipografía:** *Barlow Condensed* (títulos, industrial, se lee bien grande)
-  + *Barlow* (texto), números tabulares para tiempos y porcentajes.
-- **Estados:** verde, azul, violeta, amarillo, rojo, gris, siempre con icono y
-  texto (el amarillo de "retiro" es distinto del naranja de acción).
-- **Tema claro** para el taller iluminado, con cambio automático o manual.
-
-Muestra lista para revisar (sección 12.3). No se aplica a toda la app hasta
-tu visto bueno.
+- **Solo tema oscuro.** Superficies hollín `#110F0E`, carbón `#1A1716`,
+  yunque `#24201E`; texto cal `#F3EEE9`, secundario ceniza `#A39B94`.
+- **Un solo acento: rojo cereza** `#D62839` (el acero a ~750 °C), con texto
+  blanco encima. Reservado para la acción principal.
+- **Tipografía:** Montserrat en toda la app (incluida en el servidor, sin
+  depender de internet), con cifras tabulares para tiempos y porcentajes.
+- **Estados:** verde (libre), azul (imprimiendo), violeta (pausa), amarillo
+  (esperando retiro), coral (error), gris (sin conexión), siempre con icono y
+  texto. El coral del error es distinto del cereza de acción.
+- **Icono de la app configurable** desde el panel de administración (Fase 4):
+  subes una imagen y la app genera los tamaños para iPhone y Android. Mientras
+  tanto se usa uno provisional.
 
 ### 7.4 Instalable sin service worker
 
@@ -273,7 +280,7 @@ tu visto bueno.
 
 ### 7.5 Otros principios
 
-Objetivos táctiles ≥ 48 px, texto base 17 px, contraste AA en ambos temas,
+Objetivos táctiles ≥ 48 px, texto base 16–17 px, contraste AA,
 movimiento con propósito (y desactivado con "reducir movimiento"), estados de
 carga/vacío/error diseñados en cada pantalla, textos en español de Colombia
 centralizados en un archivo. Capturas con Playwright a 390×844 y 1440×900 en
@@ -343,7 +350,7 @@ Cada fase termina con un commit, un resumen y cómo probarla tú.
 | **1. Prueba del protocolo** | Simulador básico + CLI `npm run cli -- status/upload/print/pause/stop` que habla con una impresora (real o simulada) usando `.env`. Módulo de impresora inicial con pruebas. | Primero ves el CLI contra el simulador; luego te doy pasos exactos para tu A1 con tu `.env`. **Me detengo hasta que confirmes que imprimió**, y ajusto simulador y documentación a lo observado. |
 | **2. Servidor** | Base de datos y migraciones, API, módulo de impresoras completo, trabajos, reglas, SSE, reconciliación, limpieza de microSD, simulador completo. | Pruebas automáticas + recorrido por la API con ejemplos `curl`. |
 | **3. Interfaz de la operaria** | Primero la muestra de identidad visual para tu visto bueno; luego entrada, galería, producto, impresora, confirmación, envío, impresoras. Capturas revisadas. | Abrir en tu celular contra el simulador (o tu A1). |
-| **4. Panel del administrador** | Productos, archivos, impresoras, usuarios, historial/CSV, ajustes, copia de seguridad, registro técnico. | Crear un producto con 3 cantidades en < 2 min. |
+| **4. Panel del administrador** | Productos, archivos, impresoras, usuarios, historial/CSV, ajustes (incluye cambiar el icono de la app), copia de seguridad, registro técnico. | Crear un producto con 3 cantidades en < 2 min. |
 | **5. Pulido y entrega** | Suite e2e completa, Docker + Compose, README en español, revisión de accesibilidad y rendimiento. | Instalar desde cero siguiendo el README. |
 
 ## 11. Riesgos y cómo los mitigamos
@@ -413,17 +420,13 @@ Para desarrollar y probar no necesitas el equipo todavía: todo corre contra el
 simulador. Lo necesitarás para la prueba con la A1 real en la Fase 1 (sirve
 también tu computador conectado a la red del taller).
 
-> **Pendiente:** confírmame si vas con el mini PC con Linux (mi recomendación)
-> u otra opción. No bloquea empezar la Fase 1.
+> **Decidido:** el servidor será tu **MacBook Pro M5** (ver sección 13.1).
 
 ### 12.3 Marca: propongo yo
 
-Preparé una **muestra de identidad visual** "forja moderna" (sección 7.3) con
-la paleta, la tipografía, una tarjeta de producto, las tarjetas de impresora en
-cada estado y el botón de envío, en tema oscuro y claro:
+Aprobada con ajustes (sección 7.3 y 13.2):
 [ver la muestra](https://claude.ai/artifact/DxQARTGv28GiGXejBSmRza)
-(archivo: [`docs/identidad/propuesta.html`](./identidad/propuesta.html)). Dime qué
-ajustar; no la aplico a toda la app hasta tu visto bueno (Fase 3).
+(archivo: [`docs/identidad/propuesta.html`](./identidad/propuesta.html)).
 
 ### 12.4 Decisiones no bloqueantes (las tomo así si no me dices otra cosa)
 
@@ -435,4 +438,44 @@ ajustar; no la aplico a toda la app hasta tu visto bueno (Fase 3).
 | Archivos con varias placas laminadas | Al subir, eliges cuál placa usar (una placa = una cantidad). |
 | Retiro tras fallo o cancelación | También exige "Ya retiré la pieza" (puede quedar material en la cama). |
 | Opciones de impresión por defecto | Nivelación automática, calibración de vibración sí, flujo automático, timelapse no. |
-| Versión de firmware | Anótala para la Fase 1 (en la pantalla de la A1: Ajustes → Firmware); no la necesito ahora. |
+| Versión de firmware | Recibida: **01.08.01.00**. |
+
+## 13. Decisiones tras la aprobación
+
+### 13.1 Servidor: MacBook Pro M5
+
+Funciona bien (Apple Silicon, de sobra para 10+ impresoras). Lo que hay que
+cuidar, y que irá en el README:
+
+- **Que no se suspenda:** conectado a la corriente y con «Evitar la suspensión
+  automática cuando la pantalla esté apagada» activado (Ajustes del Sistema →
+  Batería → Opciones). Con la tapa cerrada el Mac se suspende salvo que tenga una
+  pantalla externa conectada.
+- **Que se quede en el taller:** si el Mac sale del taller, nadie puede imprimir.
+- **IP fija para el Mac** (reserva en el router): es la dirección que se guarda
+  en los celulares.
+- **Permiso de «Red local»** (macOS 15 y posteriores): la app que habla con las
+  impresoras (Terminal, Node o Docker) necesita ese permiso.
+- **Docker en Mac:** Docker Desktop funciona y es lo que pediste (un solo
+  comando), pero corre dentro de una máquina virtual: el descubrimiento
+  automático de impresoras no funciona ahí (se agregan con su IP, que igual
+  debe ser fija) y Docker Desktop debe abrirse al iniciar sesión. En la Fase 5
+  dejaré las dos opciones listas: Docker y arranque nativo con Node como
+  servicio del Mac (más liviano, con descubrimiento). Te recomendaré una con
+  base en cómo se comporte en tu Mac.
+
+### 13.2 Identidad
+
+- Solo tema oscuro, acento rojo cereza, Montserrat, botón de mantener
+  presionado sin cambios, icono configurable más adelante.
+- Tu documento original pedía también un tema claro por la luz del taller.
+  Con tu indicación de mantenerla en modo oscuro lo dejo **fuera**; si en el
+  taller la pantalla oscura se lee mal, se puede agregar después sin rehacer
+  nada (los colores están definidos como variables).
+
+### 13.3 Pruebas con la impresora real
+
+- Firmware de tu A1: 01.08.01.00. El número de serie no hace falta: el CLI lo
+  lee del certificado TLS de la impresora.
+- El código de acceso vive solo en tu archivo `.env` (ignorado por git).
+

@@ -1,0 +1,18 @@
+{
+  "name": "@blackforge/printer",
+  "private": true,
+  "version": "0.1.0",
+  "description": "M\u00f3dulo de impresora: protocolo LAN de Bambu Lab A1 (MQTT + FTPS).",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@blackforge/threemf": "*",
+    "basic-ftp": "^6.2.1",
+    "mqtt": "^5.16.0"
+  },
+  "devDependencies": {
+    "@blackforge/simulator": "*"
+  }
+}

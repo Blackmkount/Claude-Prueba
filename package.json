@@ -1,0 +1,30 @@
+{
+  "name": "blackforge-print",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Envío de impresiones pre-laminadas a impresoras Bambu Lab A1 por la red local.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "workspaces": [
+    "packages/*",
+    "tools/*"
+  ],
+  "scripts": {
+    "cli": "tsx tools/cli/src/main.ts",
+    "sim": "tsx tools/simulator/src/main.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "prettier": "^3.9.9",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}

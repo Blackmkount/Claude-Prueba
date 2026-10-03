@@ -1,51 +1,33 @@
 <title>Identidad BlackForge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap">
 <style>
-/* Concepto: "forja moderna". Superficies de hollín y carbón con un sesgo cálido,
-   un único acento: el naranja del acero a ~900 °C. Fichas de muestra a la izquierda,
-   pantallas reales de la app (marcos de celular) a la derecha en escritorio. */
+/* Concepto: "forja moderna", solo en tema oscuro. Superficies de hollín y carbón con
+   un sesgo cálido y un único acento: el rojo cereza del acero a ~750 °C. Fichas de
+   muestra a la izquierda, pantallas de la app (marcos de celular) a la derecha. */
 :root {
-  /* Tema oscuro (por defecto) */
+  /* Tema oscuro (único en esta muestra) */
   --bg: #110f0e;          /* Hollín */
   --surface: #1a1716;     /* Carbón */
   --surface-2: #24201e;   /* Yunque */
   --line: #36312e;
   --muted: #a39b94;       /* Ceniza */
   --fg: #f3eee9;          /* Cal */
-  --accent: #ff5a1f;      /* Brasa ~900 °C */
-  --on-accent: #1c0d06;
-  --accent-ink: #ff7a45;
+  --accent: #d62839;      /* Cereza ~750 °C */
+  --on-accent: #ffffff;
+  --accent-ink: #ff5c6c;
   --ok: #45c486;
   --run: #5aa2ff;
   --pause: #b097ff;
   --pickup: #f2c94c;
-  --err: #ff6363;
+  --err: #ff7a5c;
   --off: #8f8780;
   --shadow: 0 1px 0 rgb(255 255 255 / .04) inset, 0 12px 32px -18px rgb(0 0 0 / .8);
-  --font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
-  --font-body: "Barlow", "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-display: "Montserrat", "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-body: "Montserrat", "Segoe UI", Roboto, system-ui, sans-serif;
   --radius: 14px;
   color-scheme: dark;
-}
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --bg: #f4f1ed; --surface: #ffffff; --surface-2: #ece7e1; --line: #dad3cb;
-    --muted: #6b635c; --fg: #1a1614;
-    --accent: #ff5a1f; --on-accent: #1c0d06; --accent-ink: #c2410c;
-    --ok: #1d8752; --run: #1f6fd1; --pause: #7350d6; --pickup: #8a6100; --err: #c62828; --off: #6e6862;
-    --shadow: 0 1px 2px rgb(40 25 15 / .06), 0 12px 28px -20px rgb(40 25 15 / .35);
-    color-scheme: light;
-  }
-}
-:root[data-theme="light"] {
-  --bg: #f4f1ed; --surface: #ffffff; --surface-2: #ece7e1; --line: #dad3cb;
-  --muted: #6b635c; --fg: #1a1614;
-  --accent: #ff5a1f; --on-accent: #1c0d06; --accent-ink: #c2410c;
-  --ok: #1d8752; --run: #1f6fd1; --pause: #7350d6; --pickup: #8a6100; --err: #c62828; --off: #6e6862;
-  --shadow: 0 1px 2px rgb(40 25 15 / .06), 0 12px 28px -20px rgb(40 25 15 / .35);
-  color-scheme: light;
 }
 
 * { box-sizing: border-box; }
@@ -53,7 +35,7 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-body);
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.5;
   padding-inline: 16px;
   padding-block: 0 48px;
@@ -61,10 +43,10 @@ body {
 }
 .wrap { max-width: 1180px; margin-inline: auto; display: grid; gap: 40px; }
 h1, h2, h3 { font-family: var(--font-display); line-height: 1.05; text-wrap: balance; margin: 0; }
-h2 { font-size: 30px; font-weight: 700; letter-spacing: .01em; }
-h3 { font-size: 21px; font-weight: 600; }
+h2 { font-size: 26px; font-weight: 700; letter-spacing: -.01em; }
+h3 { font-size: 19px; font-weight: 700; }
 p { margin: 0; }
-.eyebrow { font-family: var(--font-display); font-weight: 600; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.eyebrow { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .lede { color: var(--muted); max-width: 62ch; }
 .num { font-variant-numeric: tabular-nums; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
@@ -80,28 +62,22 @@ p { margin: 0; }
 }
 .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .brand svg { flex: none; }
-.wordmark { font-family: var(--font-display); font-weight: 800; font-size: 24px; letter-spacing: .06em; text-transform: uppercase; line-height: 1; }
+.wordmark { font-family: var(--font-display); font-weight: 800; font-size: 19px; letter-spacing: .04em; text-transform: uppercase; line-height: 1; }
 .wordmark span { color: var(--accent-ink); }
-.theme { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--surface); }
-.theme button {
-  font: 600 15px/1 var(--font-body); color: var(--muted); background: none; border: 0;
-  min-height: 40px; padding-inline: 14px; border-radius: 999px; cursor: pointer;
-}
-.theme button[aria-pressed="true"] { background: var(--surface-2); color: var(--fg); }
 
 .hero { display: grid; gap: 14px; padding-top: 28px; }
-.hero h1 { font-size: clamp(40px, 7vw, 68px); font-weight: 800; text-transform: uppercase; letter-spacing: .01em; }
+.hero h1 { font-size: clamp(32px, 5.6vw, 58px); font-weight: 800; text-transform: uppercase; letter-spacing: -.01em; line-height: 1.02; }
 .hero h1 em { font-style: normal; color: var(--accent-ink); }
 
 /* Escala de calor del acero */
 .heat { display: grid; gap: 8px; max-width: 640px; }
 .heat-bar {
   height: 14px; border-radius: 999px;
-  background: linear-gradient(90deg, #3a0c06 0%, #8e1a0c 18%, #c9260f 34%, #ff5a1f 55%, #ffa23a 74%, #ffe08a 90%, #fff6dc 100%);
+  background: linear-gradient(90deg, #3a0c06 0%, #8e1a0c 18%, #d62839 34%, #ff5a1f 55%, #ffa23a 74%, #ffe08a 90%, #fff6dc 100%);
   position: relative;
 }
 .heat-bar::after {
-  content: ""; position: absolute; left: 55%; top: -5px; width: 3px; height: 24px; border-radius: 2px;
+  content: ""; position: absolute; left: 34%; top: -5px; width: 3px; height: 24px; border-radius: 2px;
   background: var(--fg); transform: translateX(-50%);
 }
 .heat-scale { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); gap: 8px; }
@@ -136,10 +112,10 @@ section { display: grid; gap: 14px; }
 
 /* Tipografía */
 .type { display: grid; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
-.type .t1 { font-family: var(--font-display); font-weight: 700; font-size: 40px; line-height: 1; }
-.type .t2 { font-family: var(--font-display); font-weight: 600; font-size: 24px; }
+.type .t1 { font-family: var(--font-display); font-weight: 800; font-size: 32px; line-height: 1.05; letter-spacing: -.01em; }
+.type .t2 { font-family: var(--font-display); font-weight: 600; font-size: 21px; }
 .type .t3 { font-size: 17px; }
-.type .t4 { font-family: var(--font-display); font-weight: 700; font-size: 34px; font-variant-numeric: tabular-nums; }
+.type .t4 { font-family: var(--font-display); font-weight: 700; font-size: 28px; font-variant-numeric: tabular-nums; }
 .type small { color: var(--muted); font-size: 13px; display: block; }
 
 /* Marcos de celular */
@@ -153,7 +129,7 @@ section { display: grid; gap: 14px; }
   display: grid; grid-template-rows: auto 1fr auto; position: relative;
 }
 .bar { padding: 16px 16px 10px; display: grid; gap: 10px; }
-.bar h3 { font-size: 28px; font-weight: 700; }
+.bar h3 { font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
 .search {
   display: flex; align-items: center; gap: 8px; min-height: 48px; padding-inline: 14px;
   border-radius: 12px; background: var(--surface); border: 1px solid var(--line); color: var(--muted);
@@ -198,11 +174,12 @@ section { display: grid; gap: 14px; }
 .pc.no { background: color-mix(in srgb, var(--surface) 55%, var(--bg)); }
 .pc .ic { --c: var(--off); width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent); }
 .pc .ic svg { width: 24px; height: 24px; }
-.pc .nm { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pc .nm { font-family: var(--font-display); font-weight: 700; font-size: 18px; line-height: 1; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .pc .st { font-weight: 600; font-size: 15px; color: var(--c, var(--muted)); }
 .pc .why { grid-column: 2 / -1; color: var(--muted); font-size: 14px; }
 .tag { font: 700 12px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--on-accent); background: var(--accent); padding: 4px 7px; border-radius: 6px; }
-.fil { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.fil { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.pc .fil { grid-column: 2 / -1; }
 .dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--fg) 30%, transparent); flex: none; }
 .prog { grid-column: 2 / -1; display: grid; gap: 4px; }
 .track { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
@@ -215,7 +192,7 @@ section { display: grid; gap: 14px; }
 /* Confirmación */
 .summary { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
 .summary .ph { border-radius: 10px; }
-.summary .what { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1.05; }
+.summary .what { font-family: var(--font-display); font-weight: 700; font-size: 18px; line-height: 1.15; }
 .summary .meta { display: grid; gap: 2px; margin-top: 4px; font-size: 15px; color: var(--muted); }
 .summary .meta b { color: var(--fg); font-weight: 600; }
 .checks { display: grid; gap: 10px; margin-top: 14px; }
@@ -232,13 +209,13 @@ section { display: grid; gap: 14px; }
 .hold {
   --p: 0;
   position: relative; overflow: hidden; width: 100%; min-height: 64px; margin-top: 16px; border: 0; border-radius: 16px;
-  font: 700 22px/1 var(--font-display); letter-spacing: .06em; text-transform: uppercase;
+  font: 800 16px/1 var(--font-display); letter-spacing: .03em; text-transform: uppercase; white-space: nowrap;
   color: var(--on-accent); background: var(--accent); cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none;
   display: grid; place-items: center;
 }
 .hold::before {
   content: ""; position: absolute; inset: 0; transform-origin: left; transform: scaleX(var(--p));
-  background: linear-gradient(90deg, #ffb15a, #ffe08a);
+  background: linear-gradient(90deg, #e8402f, #f2542d);
 }
 .hold span { position: relative; display: inline-flex; gap: 10px; align-items: center; }
 .hold:disabled { background: var(--surface-2); color: var(--muted); cursor: not-allowed; }
@@ -274,10 +251,10 @@ section { display: grid; gap: 14px; }
       <rect width="64" height="64" rx="15" fill="#161312"/>
       <path d="M19 12h26v10H19z" fill="#d9d2cb"/>
       <path d="M22 22h20l-5.5 14h-9z" fill="#b8b0a8"/>
-      <path d="M28.5 36h7l-3.5 7z" fill="#ff5a1f"/>
-      <circle cx="32" cy="44" r="3.2" fill="#ffb15a"/>
-      <rect x="14" y="50" width="36" height="3.4" rx="1.7" fill="#ff5a1f"/>
-      <rect x="18" y="55" width="28" height="2.6" rx="1.3" fill="#ff5a1f" opacity=".55"/>
+      <path d="M28.5 36h7l-3.5 7z" fill="#d62839"/>
+      <circle cx="32" cy="44" r="3.2" fill="#ff7a6b"/>
+      <rect x="14" y="50" width="36" height="3.4" rx="1.7" fill="#d62839"/>
+      <rect x="18" y="55" width="28" height="2.6" rx="1.3" fill="#d62839" opacity=".55"/>
     </symbol>
   </defs>
 </svg>
@@ -288,20 +265,16 @@ section { display: grid; gap: 14px; }
       <svg width="40" height="40" role="img" aria-label="Símbolo de BlackForge"><use href="#mark"/></svg>
       <div class="wordmark">Black<span>Forge</span> Print</div>
     </div>
-    <div class="theme" role="group" aria-label="Tema de la muestra">
-      <button type="button" id="th-system" data-t="system" aria-pressed="true">Sistema</button>
-      <button type="button" id="th-dark" data-t="dark" aria-pressed="false">Oscuro</button>
-      <button type="button" id="th-light" data-t="light" aria-pressed="false">Claro</button>
-    </div>
+    <span class="eyebrow">Tema oscuro</span>
   </header>
 
   <div class="hero">
-    <p class="eyebrow">Propuesta de identidad · Fase 0 · para tu visto bueno</p>
-    <h1>Superficies de carbón, <em>acento de brasa</em></h1>
-    <p class="lede">Una forja moderna: fondos sobrios con un toque cálido, y un único color de acción, el naranja del acero cuando está listo para golpearse. Ese naranja se usa solo para lo que se toca y se envía; los estados de las impresoras tienen sus propios colores, siempre con icono y texto.</p>
+    <p class="eyebrow">Identidad aprobada · ajustes de la Fase 1</p>
+    <h1>Superficies de carbón, <em>acento cereza</em></h1>
+    <p class="lede">Una forja moderna en tema oscuro: fondos sobrios con un toque cálido y un único color de acción, el rojo cereza del acero cuando empieza a brillar en la fragua. El cereza se usa solo para lo que se toca y se envía; los estados de las impresoras tienen sus propios colores, siempre con icono y texto.</p>
     <div class="heat" aria-label="Escala de color del acero según su temperatura">
       <div class="heat-bar"></div>
-      <div class="heat-scale num"><span>Rojo oscuro 650 °C</span><span>Cereza 750 °C</span><span><b>Brasa 900 °C</b></span><span>Amarillo 1100 °C</span><span>Blanco 1300 °C</span></div>
+      <div class="heat-scale num"><span>Rojo oscuro 650 °C</span><span><b>Cereza 750 °C</b></span><span>Naranja 900 °C</span><span>Amarillo 1100 °C</span><span>Blanco 1300 °C</span></div>
     </div>
   </div>
 
@@ -315,9 +288,8 @@ section { display: grid; gap: 14px; }
           <div class="sw"><i style="background:var(--surface-2)"></i><div><b>Yunque</b><small>Controles, pistas</small></div></div>
           <div class="sw"><i style="background:var(--muted)"></i><div><b>Ceniza</b><small>Texto secundario</small></div></div>
           <div class="sw"><i style="background:var(--fg)"></i><div><b>Cal</b><small>Texto principal</small></div></div>
-          <div class="sw"><i style="background:var(--accent)"></i><div><b>Brasa</b><small>Única acción principal</small></div></div>
+          <div class="sw"><i style="background:var(--accent)"></i><div><b>Cereza</b><small>Única acción principal</small></div></div>
         </div>
-        <p class="lede" style="font-size:14px">Los nombres son los del tema oscuro; en el tema claro los fondos se aclaran y el texto se oscurece, y la brasa se mantiene.</p>
         <p class="eyebrow" style="margin-top:6px">Estados de impresora</p>
         <div class="states">
           <span class="pill s-ok"><svg><use href="#i-check"/></svg>Libre</span>
@@ -332,22 +304,22 @@ section { display: grid; gap: 14px; }
       <section aria-labelledby="h-type">
         <h2 id="h-type">Tipografía</h2>
         <div class="type">
-          <div><small>Títulos · Barlow Condensed</small><div class="t1">Elige una impresora</div></div>
+          <div><small>Títulos · Montserrat ExtraBold</small><div class="t1">Elige una impresora</div></div>
           <div><small>Subtítulos</small><div class="t2">Oso articulado · 2 unidades</div></div>
-          <div><small>Texto · Barlow, 17 px mínimo</small><p class="t3">Revisa que la cama esté limpia y vacía antes de enviar. Si algo falla, te decimos qué hacer.</p></div>
+          <div><small>Texto · Montserrat, 16 px mínimo</small><p class="t3">Revisa que la cama esté limpia y vacía antes de enviar. Si algo falla, te decimos qué hacer.</p></div>
           <div><small>Cifras tabulares</small><div class="t4">2 h 14 min · 38 g · 62 %</div></div>
         </div>
-        <p class="lede" style="font-size:15px">Barlow nació de la señalización de carreteras y placas de vehículos: se lee bien grande, de lejos y con prisa. En la app irá incluida en el servidor, sin depender de internet.</p>
+        <p class="lede" style="font-size:15px">Montserrat nació de los carteles y letreros del barrio Montserrat, en Buenos Aires: geométrica, firme y muy legible en pantallas. En la app irá incluida en el servidor, sin depender de internet.</p>
       </section>
 
       <section aria-labelledby="h-icon">
-        <h2 id="h-icon">Icono en la pantalla de inicio</h2>
+        <h2 id="h-icon">Icono provisional</h2>
         <div class="icons">
           <figure><svg width="120" height="120" role="img" aria-label="Icono grande"><use href="#mark"/></svg>Inicio del iPhone</figure>
           <figure><svg width="60" height="60" role="img" aria-label="Icono mediano"><use href="#mark"/></svg>Android</figure>
           <figure><svg width="32" height="32" role="img" aria-label="Icono pequeño"><use href="#mark"/></svg>Pestaña</figure>
         </div>
-        <p class="lede" style="font-size:15px">Una boquilla de impresora con la punta al rojo y dos capas recién depositadas: la forja y la impresión 3D en un solo signo.</p>
+        <p class="lede" style="font-size:15px">Este icono es provisional. Desde el panel de administración podrás subir el tuyo cuando quieras; la app genera sola los tamaños para iPhone y Android.</p>
       </section>
     </div>
 
@@ -380,7 +352,7 @@ section { display: grid; gap: 14px; }
                 </div>
                 <div class="tile">
                   <div class="ph" style="--tone:#2a1d17">
-                    <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="26" r="9" fill="none" stroke="#b8b0a8" stroke-width="4"/><path d="M50 35 72 48v26L50 87 28 74V48z" fill="#ff5a1f"/><path d="M50 35 72 48 50 61 28 48z" fill="#ff8a4f"/><text x="50" y="76" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="16" text-anchor="middle" fill="#1c0d06">BF</text></svg>
+                    <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="26" r="9" fill="none" stroke="#b8b0a8" stroke-width="4"/><path d="M50 35 72 48v26L50 87 28 74V48z" fill="#d62839"/><path d="M50 35 72 48 50 61 28 48z" fill="#f0505f"/><text x="50" y="76" font-family="Montserrat, sans-serif" font-weight="800" font-size="13" text-anchor="middle" fill="#ffffff">BF</text></svg>
                   </div>
                   <b>Llavero BlackForge</b><small class="num">6 · 12 · 24 u.</small>
                 </div>
@@ -508,29 +480,19 @@ section { display: grid; gap: 14px; }
   </div>
 
   <section class="ask" aria-labelledby="h-ask">
-    <h2 id="h-ask">Qué necesito saber de ti</h2>
+    <h2 id="h-ask">Cambios según tus indicaciones</h2>
     <ol>
-      <li>¿Te gusta la dirección general, oscura y sobria con acento naranja?</li>
-      <li>¿El naranja "brasa" te representa, o lo prefieres más rojo (cereza) o más dorado?</li>
-      <li>¿La tipografía condensada te parece con carácter y fácil de leer?</li>
-      <li>¿El símbolo de la boquilla al rojo te sirve como icono de la app?</li>
-      <li>¿El botón de mantener presionado te parece cómodo para tus operarias?</li>
+      <li>Solo tema oscuro.</li>
+      <li>Acento más rojo: cereza (#D62839), con texto blanco encima.</li>
+      <li>Tipografía Montserrat en toda la app.</li>
+      <li>Icono provisional, reemplazable desde el panel de administración.</li>
+      <li>El botón de mantener presionado queda igual.</li>
     </ol>
   </section>
 </div>
 
 <script>
 (function () {
-  var root = document.documentElement;
-  var buttons = document.querySelectorAll('.theme button');
-  function setTheme(t) {
-    if (t === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', t);
-    buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.t === t)); });
-    try { localStorage.setItem('bf-theme', t); } catch (e) {}
-  }
-  buttons.forEach(function (b) { b.addEventListener('click', function () { setTheme(b.dataset.t); }); });
-  try { var saved = localStorage.getItem('bf-theme'); if (saved) setTheme(saved); } catch (e) {}
-
   // Botón de mantener presionado
   var HOLD_MS = 1200;
   var hold = document.getElementById('hold');

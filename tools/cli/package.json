@@ -1,0 +1,14 @@
+{
+  "name": "@blackforge/cli",
+  "private": true,
+  "version": "0.1.0",
+  "description": "CLI de prueba del protocolo de la impresora (Fase 1).",
+  "type": "module",
+  "dependencies": {
+    "@blackforge/printer": "*",
+    "@blackforge/threemf": "*"
+  },
+  "devDependencies": {
+    "@blackforge/simulator": "*"
+  }
+}
